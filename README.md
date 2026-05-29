@@ -1,6 +1,6 @@
-# GreenLedger Personal Capital Terminal 🌐
+# TrackerCore Personal Capital Terminal 🌐
 
-GreenLedger is a modern, beautiful, and secure personal finance tracker application structured as a monorepo containing a frontend client and backend server.
+TrackerCore is a modern, beautiful, and secure personal finance tracker application structured as a monorepo containing a frontend client and backend server.
 
 ## 📂 Project Structure
 

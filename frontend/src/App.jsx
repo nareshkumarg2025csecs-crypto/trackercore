@@ -78,7 +78,7 @@ const AppContent = () => {
           <div className="max-w-md w-full bg-brand-card border border-[rgba(255,255,255,0.06)] rounded-3xl p-8 space-y-6 shadow-2xl">
             <div className="space-y-2 text-center">
               <h1 className="text-xl font-bold tracking-wider font-heading uppercase text-brand-text">
-                Welcome to GreenLedger
+                Welcome to TrackerCore
               </h1>
               <p className="text-xs text-brand-text/50 font-mono">
                 Initialize your personal finance terminal ledger
@@ -236,7 +236,7 @@ const AppContent = () => {
             </div>
             
             <div className="mt-4 text-center border-t border-[rgba(255,255,255,0.03)] pt-4 text-[9px] font-mono text-brand-text/20">
-              GreenLedger Financial Command Terminal. Operating in Asia/Kolkata timezone.
+              TrackerCore Financial Command Terminal. Operating in Asia/Kolkata timezone.
             </div>
           </div>
         </footer>
