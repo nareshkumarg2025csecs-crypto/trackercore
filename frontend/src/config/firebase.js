@@ -2,10 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// GreenLedger client-side Firebase Web configuration.
+// TrackerCore client-side Firebase Web configuration.
 // Utilizes environment variables (Vite import.meta.env) with valid-looking local development fallbacks.
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyPlaceholderForGreenLedger",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyPlaceholderForTrackerCore",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "greenledger-tracker.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "greenledger-tracker",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "greenledger-tracker.appspot.com",
