@@ -102,7 +102,7 @@ const LoadingScreen = ({ isExiting = false }) => {
         {/* Central Logo Typewriter */}
         <div className="h-12 flex items-center justify-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-widest font-heading text-[#00e676] uppercase">
-            <span className="typewriter-text">GREENLEDGER</span>
+            <span className="typewriter-text">TRACKERCORE</span>
           </h1>
         </div>
 

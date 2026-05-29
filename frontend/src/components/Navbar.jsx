@@ -21,7 +21,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <span className="text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
-              GREEN<span className="text-brand-text">LEDGER</span>
+              TRACKER<span className="text-brand-text">CORE</span>
             </span>
           </Link>
 

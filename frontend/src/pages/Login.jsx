@@ -97,7 +97,7 @@ const Login = ({ showToast }) => {
           return;
         }
         await registerWithEmail(name, email, password);
-        showToast("Welcome to GreenLedger! 🚀", "success");
+        showToast("Welcome to TrackerCore! 🚀", "success");
       } else {
         await loginWithEmail(email, password);
         showToast("Access Granted. Welcome back 🌐", "success");
