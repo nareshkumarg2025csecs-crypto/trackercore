@@ -329,17 +329,6 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
           </div>
         </div>
       </div>
-                          {formatDate(t.date)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Transaction Modal dialog */}
       <TransactionModal
