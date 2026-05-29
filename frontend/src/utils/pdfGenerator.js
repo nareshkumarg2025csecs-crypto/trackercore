@@ -1,6 +1,11 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import { formatCurrency, formatDate, computeRunningBalances } from "./calculations";
+import { formatDate, computeRunningBalances } from "./calculations";
+
+// Helper: Format currency specifically for PDF by stripping Unicode symbols
+const formatPDFCurrency = (amount) => {
+  return "Rs." + parseFloat(amount).toFixed(2);
+};
 
 export const generatePDFReport = async (allTransactions, filteredTransactions, startingBalance, reportTitle, dateRangeText, showToast) => {
   try {
@@ -83,10 +88,10 @@ export const generatePDFReport = async (allTransactions, filteredTransactions, s
     // 2. FOUR-COLUMN SUMMARY TABLE
     const summaryHeaders = [["Opening Balance", "Total Deposited", "Total Withdrawn", "Closing Balance"]];
     const summaryData = [[
-      formatCurrency(openingBalance),
-      formatCurrency(totalDeposited),
-      formatCurrency(totalWithdrawn),
-      formatCurrency(closingBalance)
+      formatPDFCurrency(openingBalance),
+      formatPDFCurrency(totalDeposited),
+      formatPDFCurrency(totalWithdrawn),
+      formatPDFCurrency(closingBalance)
     ]];
 
     autoTable(doc, {
@@ -127,9 +132,9 @@ export const generatePDFReport = async (allTransactions, filteredTransactions, s
         t.title,
         t.category,
         t.paymentMode,
-        isSaving ? formatCurrency(t.amount) : "-",
-        !isSaving ? formatCurrency(t.amount) : "-",
-        formatCurrency(balanceVal)
+        isSaving ? formatPDFCurrency(t.amount) : "-",
+        !isSaving ? formatPDFCurrency(t.amount) : "-",
+        formatPDFCurrency(balanceVal)
       ];
     });
 
