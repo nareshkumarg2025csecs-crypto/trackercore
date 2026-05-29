@@ -157,7 +157,7 @@ const Login = ({ showToast }) => {
         {/* Logo and Tagline */}
         <div className="text-center space-y-1">
           <h2 className="text-3xl font-extrabold tracking-widest text-[#00e676] neon-text-glow font-heading uppercase">
-            GREEN<span className="text-[#e0ffe8]">LEDGER</span>
+            TRACKER<span className="text-[#e0ffe8]">CORE</span>
           </h2>
           <p className="text-[10px] uppercase font-mono tracking-widest text-[#e0ffe8]/40">
             Secure Personal Capital Terminal

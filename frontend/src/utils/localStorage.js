@@ -1,4 +1,4 @@
-// Local Storage Data Management for GreenLedger
+// Local Storage Data Management for TrackerCore
 
 const getStorageKey = (uid) => uid ? `${uid}_expense_tracker_data` : "expense_tracker_data";
 const getBalanceKey = (uid) => uid ? `${uid}_starting_balance` : "starting_balance";
