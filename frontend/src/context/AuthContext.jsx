@@ -108,13 +108,12 @@ export const AuthProvider = ({ children }) => {
     loginWithGoogle,
     registerWithEmail,
     resetPassword,
-    logout
+    logout,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {loading && <LoadingScreen isExiting={exitingLoader} />}
-      {!loading && children}
+      {loading ? <LoadingScreen exiting={exitingLoader} /> : children}
     </AuthContext.Provider>
   );
 };

@@ -12,6 +12,7 @@ import LoadingScreen from "./components/LoadingScreen";
 // Context & Hooks
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { useTransactions } from "./hooks/useTransactions";
+import { getTodayISTDateString, getLiveBankBalance } from "./utils/calculations";
 
 // Lazy Pages for Route-Level Loader Animations
 const Home = React.lazy(() => import("./pages/Home"));
@@ -41,6 +42,7 @@ const AppContent = () => {
   const {
     transactions,
     startingBalance,
+    lastBalanceUpdate,
     updateStartingBalance,
     addTransaction,
     editTransaction,
@@ -48,6 +50,19 @@ const AppContent = () => {
     bulkDeleteTransactions,
     clearAllTransactions,
   } = useTransactions(user?.uid, showToast);
+
+  // Daily balance prompt logic
+  const [showDailyPrompt, setShowDailyPrompt] = useState(false);
+
+  React.useEffect(() => {
+    if (startingBalance !== null && lastBalanceUpdate) {
+      const today = getTodayISTDateString();
+      const lastUpdate = lastBalanceUpdate.split("T")[0];
+      if (lastUpdate !== today) {
+        setShowDailyPrompt(true);
+      }
+    }
+  }, [startingBalance, lastBalanceUpdate]);
 
   // Welcome modal balance field
   const [tempBalance, setTempBalance] = useState("");
@@ -64,6 +79,8 @@ const AppContent = () => {
       return;
     }
     updateStartingBalance(parsed);
+    setShowDailyPrompt(false);
+    setTempBalance("");
   };
 
   return (
@@ -71,6 +88,64 @@ const AppContent = () => {
       
       {/* Sticky Header - active when startingBalance is set and user is authenticated */}
       {startingBalance !== null && user && <Navbar />}
+
+      {/* DAILY BALANCE RE-VERIFICATION PROMPT */}
+      {showDailyPrompt && user && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-brand-bg/80 backdrop-blur-md p-4">
+          <div className="max-w-md w-full bg-brand-card border border-brand-accent/20 rounded-3xl p-8 space-y-6 shadow-2xl animate-modal">
+            <div className="space-y-2 text-center">
+              <div className="inline-flex p-3 rounded-2xl bg-brand-accent/10 text-brand-accent mb-2">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <h2 className="text-xl font-bold tracking-wider font-heading uppercase text-brand-text">
+                Daily Balance Check
+              </h2>
+              <p className="text-xs text-brand-text/50 font-mono">
+                Confirm your current bank balance for today's ledger.
+              </p>
+            </div>
+
+            <form onSubmit={handleInitializeBalance} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-brand-text/50 font-mono">
+                  Current Bank Balance (INR)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/40 font-mono text-sm">
+                    ₹
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    placeholder={getLiveBankBalance(transactions, startingBalance).toFixed(2)}
+                    value={tempBalance}
+                    onChange={(e) => setTempBalance(e.target.value)}
+                    className="w-full bg-brand-bg/50 border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-4 py-3 text-sm font-mono text-brand-text focus:outline-none focus:border-brand-accent/30 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowDailyPrompt(false)}
+                  className="flex-1 py-3 rounded-xl bg-brand-bg border border-[rgba(255,255,255,0.06)] text-brand-text/60 font-mono text-[10px] uppercase font-bold hover:bg-brand-card transition cursor-pointer"
+                >
+                  Skip for now
+                </button>
+                <button
+                  type="submit"
+                  className="flex-[2] py-3 rounded-xl bg-brand-accent text-brand-bg font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 hover:bg-brand-accent/90 transition cursor-pointer"
+                >
+                  <span>Sync Balance</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* FULL-SCREEN WELCOME BALANCE MODAL */}
       {startingBalance === null && user && (
