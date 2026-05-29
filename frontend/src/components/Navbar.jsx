@@ -29,7 +29,7 @@ const Navbar = () => {
                 className="relative h-10 w-10 sm:h-11 sm:w-11 md:h-12 md:w-12 object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-3" 
               />
             </div>
-            <span className="hidden xs:block text-lg md:text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
+            <span className="text-lg md:text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
               TRACKER<span className="text-brand-text">CORE</span>
             </span>
           </Link>
