@@ -6,9 +6,9 @@ import { getFirestore } from "firebase/firestore";
 // Utilizes environment variables (Vite import.meta.env) with valid-looking local development fallbacks.
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyPlaceholderForTrackerCore",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "greenledger-tracker.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "greenledger-tracker",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "greenledger-tracker.appspot.com",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "TrackerCore-tracker.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "TrackerCore-tracker",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "TrackerCore-tracker.appspot.com",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abcdef1234567890"
 };
