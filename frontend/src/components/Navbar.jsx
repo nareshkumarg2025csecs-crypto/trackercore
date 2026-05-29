@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Receipt, BarChart3, Lightbulb, LogOut } from "lucide-react";
+import { Home, Receipt, BarChart3, Lightbulb, LogOut, Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
 
@@ -19,16 +20,15 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <span className="text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
+          <Link to="/" className="flex items-center space-x-2 group shrink-0">
+            <span className="text-lg md:text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
               TRACKER<span className="text-brand-text">CORE</span>
             </span>
           </Link>
 
-          {/* Right side panel containing links & auth actions */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Navigation Links */}
-            <div className="flex space-x-1 sm:space-x-2 md:space-x-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -37,14 +37,14 @@ const Navbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-1.5 rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
+                    className={`flex items-center space-x-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ${
                       isActive
                         ? "bg-brand-accent/15 text-brand-accent border border-brand-accent/30 neon-border-glow"
                         : "text-brand-text/60 hover:bg-brand-card hover:text-brand-text border border-transparent"
                     }`}
                   >
-                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="hidden md:inline">{item.label}</span>
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -52,7 +52,7 @@ const Navbar = () => {
 
             {/* Operator Chip / Logout */}
             {user && (
-              <div className="flex items-center space-x-2 sm:space-x-3 border-l border-brand-accent/15 pl-2 sm:pl-4">
+              <div className="flex items-center space-x-3 border-l border-brand-accent/15 pl-4">
                 <div className="hidden lg:flex flex-col text-right font-mono">
                   <span className="text-[8px] uppercase tracking-widest text-brand-text/30">Operator</span>
                   <span className="text-[10px] font-bold text-brand-accent tracking-wide max-w-[100px] truncate">
@@ -61,15 +61,78 @@ const Navbar = () => {
                 </div>
                 <button
                   onClick={logout}
-                  className="flex items-center space-x-1 sm:space-x-1.5 rounded-lg px-2 py-1.5 text-[10px] font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white cursor-pointer uppercase tracking-wider"
+                  className="flex items-center space-x-1.5 rounded-lg px-2 py-1.5 text-[10px] font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white cursor-pointer uppercase tracking-wider"
                   title="Disconnect session"
                 >
                   <LogOut className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Disconnect</span>
+                  <span>Disconnect</span>
                 </button>
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-lg text-brand-text/60 hover:bg-brand-card hover:text-brand-accent transition-colors"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-[500px] opacity-100 border-t border-brand-accent/15" : "max-h-0 opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="px-4 py-4 space-y-2 bg-brand-bg/95 backdrop-blur-xl">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center space-x-3 rounded-lg px-4 h-[48px] text-base font-medium transition-all duration-300 ${
+                  isActive
+                    ? "bg-brand-accent/15 text-brand-accent border border-brand-accent/30"
+                    : "text-brand-text/60 hover:bg-brand-card hover:text-brand-text border border-transparent"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+
+          {user && (
+            <div className="pt-4 mt-4 border-t border-brand-accent/10">
+              <div className="flex items-center justify-between mb-4 px-2">
+                <div className="flex flex-col font-mono text-left">
+                  <span className="text-[10px] uppercase tracking-widest text-brand-text/30">Operator</span>
+                  <span className="text-sm font-bold text-brand-accent tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+                    {user.displayName || "Operator"}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    logout();
+                  }}
+                  className="flex items-center space-x-2 rounded-lg px-4 h-[48px] text-xs font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white uppercase tracking-wider"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Disconnect</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>

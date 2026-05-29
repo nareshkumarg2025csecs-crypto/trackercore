@@ -153,19 +153,19 @@ const Login = ({ showToast }) => {
         }
       `}</style>
 
-      <div className="w-full max-w-md glass-login-card rounded-[32px] p-8 sm:p-10 space-y-8 animate-modal">
+      <div className="w-[92%] sm:w-full max-w-[420px] glass-login-card rounded-2xl sm:rounded-[32px] p-6 sm:p-10 space-y-6 sm:space-y-8 animate-modal">
         {/* Logo and Tagline */}
         <div className="text-center space-y-1">
-          <h2 className="text-3xl font-extrabold tracking-widest text-[#00e676] neon-text-glow font-heading uppercase">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-widest text-[#00e676] neon-text-glow font-heading uppercase">
             Tracker<span className="text-[#e0ffe8]">Core</span>
           </h2>
-          <p className="text-[10px] uppercase font-mono tracking-widest text-[#e0ffe8]/40">
+          <p className="text-[9px] sm:text-[10px] uppercase font-mono tracking-widest text-[#e0ffe8]/40">
             Secure Personal Capital Terminal
           </p>
         </div>
 
         {/* Sliding Tabs */}
-        <div className="relative flex bg-[#0a0f0d] border border-rgba(255,255,255,0.04) p-1 rounded-xl font-mono text-xs text-center font-bold">
+        <div className="relative flex bg-[#0a0f0d] border border-rgba(255,255,255,0.04) p-1 rounded-xl font-mono text-[10px] sm:text-xs text-center font-bold">
           {/* Highlight indicator background slide */}
           <div
             className={`absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-[#111a15] border border-[#00e676]/30 rounded-lg transition-transform duration-300 ${
@@ -179,7 +179,7 @@ const Login = ({ showToast }) => {
               setPassword("");
               setConfirmPassword("");
             }}
-            className={`flex-1 py-2.5 z-10 transition-colors cursor-pointer ${
+            className={`flex-1 py-2 sm:py-2.5 z-10 transition-colors cursor-pointer ${
               !isRegister ? "text-[#00e676]" : "text-[#e0ffe8]/40"
             }`}
           >
@@ -192,7 +192,7 @@ const Login = ({ showToast }) => {
               setPassword("");
               setConfirmPassword("");
             }}
-            className={`flex-1 py-2.5 z-10 transition-colors cursor-pointer ${
+            className={`flex-1 py-2 sm:py-2.5 z-10 transition-colors cursor-pointer ${
               isRegister ? "text-[#00e676]" : "text-[#e0ffe8]/40"
             }`}
           >
@@ -201,49 +201,49 @@ const Login = ({ showToast }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           {isRegister && (
-            <div className="space-y-1.5 font-mono">
-              <label className="text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
+            <div className="space-y-1 sm:space-y-1.5 font-mono">
+              <label className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
                 Full Name
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#e0ffe8]/30" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#e0ffe8]/30" />
                 <input
                   type="text"
                   required
                   placeholder="Enter full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-[#0a0f0d]/50 border border-rgba(255,255,255,0.08) focus:border-[#00e676]/40 focus:outline-none rounded-xl pl-10 pr-4 py-3 text-xs text-[#e0ffe8]"
+                  className="w-full bg-[#0a0f0d]/50 border border-rgba(255,255,255,0.08) focus:border-[#00e676]/40 focus:outline-none rounded-xl pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-[11px] sm:text-xs text-[#e0ffe8]"
                 />
               </div>
             </div>
           )}
 
-          <div className="space-y-1.5 font-mono">
-            <label className="text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
+          <div className="space-y-1 sm:space-y-1.5 font-mono">
+            <label className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#e0ffe8]/30" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#e0ffe8]/30" />
               <input
                 type="email"
                 required
                 placeholder="name@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#0a0f0d]/50 border border-rgba(255,255,255,0.08) focus:border-[#00e676]/40 focus:outline-none rounded-xl pl-10 pr-4 py-3 text-xs text-[#e0ffe8]"
+                className="w-full bg-[#0a0f0d]/50 border border-rgba(255,255,255,0.08) focus:border-[#00e676]/40 focus:outline-none rounded-xl pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-[11px] sm:text-xs text-[#e0ffe8]"
               />
             </div>
           </div>
 
-          <div className="space-y-1.5 font-mono">
-            <label className="text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
+          <div className="space-y-1 sm:space-y-1.5 font-mono">
+            <label className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#e0ffe8]/50">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#e0ffe8]/30" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#e0ffe8]/30" />
               <input
                 type={showPassword ? "text" : "password"}
                 required

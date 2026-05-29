@@ -6,12 +6,12 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmTex
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-bg/85 backdrop-blur-sm animate-fade-in">
-      <div className="glass-panel w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-brand-danger/30 animate-modal">
+      <div className="glass-panel w-[92%] sm:w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-brand-danger/30 animate-modal">
         {/* Header */}
-        <div className="px-6 py-4 bg-brand-danger/10 border-b border-brand-danger/20 flex items-center justify-between">
+        <div className="px-5 sm:px-6 py-4 bg-brand-danger/10 border-b border-brand-danger/20 flex items-center justify-between">
           <div className="flex items-center space-x-2 text-brand-danger">
             <AlertTriangle className="h-5 w-5" />
-            <h3 className="font-extrabold font-heading text-sm tracking-wider uppercase">
+            <h3 className="font-extrabold font-heading text-[11px] sm:text-sm tracking-wider uppercase">
               {title}
             </h3>
           </div>
@@ -24,23 +24,23 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmTex
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <p className="text-sm text-brand-text/80 leading-relaxed font-mono">
+        <div className="p-5 sm:p-6">
+          <p className="text-[11px] sm:text-sm text-brand-text/80 leading-relaxed font-mono">
             {message}
           </p>
         </div>
 
         {/* Actions */}
-        <div className="px-6 py-4 bg-brand-card/50 border-t border-brand-accent/5 flex items-center justify-end space-x-3">
+        <div className="px-5 sm:px-6 py-4 bg-brand-card/50 border-t border-[rgba(255,255,255,0.06)] flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg text-xs font-bold text-brand-text/60 hover:text-brand-text hover:bg-brand-card border border-brand-accent/10 transition"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-lg text-xs font-bold text-brand-text/60 hover:text-brand-text hover:bg-brand-card border border-[rgba(255,255,255,0.1)] transition"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 rounded-lg text-xs font-bold bg-brand-danger/20 text-brand-danger border border-brand-danger/40 hover:bg-brand-danger hover:text-white transition flex items-center space-x-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-lg text-xs font-bold bg-brand-danger/20 text-brand-danger border border-brand-danger/40 hover:bg-brand-danger hover:text-white transition flex items-center justify-center space-x-1.5"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span>{confirmText}</span>

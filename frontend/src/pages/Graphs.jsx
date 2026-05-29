@@ -120,25 +120,25 @@ const Graphs = ({ transactions }) => {
   const hasExpenses = transactions.filter((t) => t.type === "expense").length > 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
+    <div className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-12 space-y-8 md:space-y-12 text-left">
       {/* 1. Header Panel */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-[rgba(255,255,255,0.06)] pb-8">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-wider text-brand-text font-heading uppercase">
+          <h1 className="text-xl md:text-2xl font-bold tracking-wider text-brand-text font-heading uppercase">
             Spending Analytics
           </h1>
-          <p className="text-xs text-brand-text/50 font-mono">
+          <p className="text-[10px] md:text-xs text-brand-text/50 font-mono">
             Analytical chart modules and gateway balances visualizations
           </p>
         </div>
 
         {/* View Switches */}
-        <div className="inline-flex rounded-xl bg-brand-card p-1 border border-[rgba(255,255,255,0.06)]">
+        <div className="flex w-full md:w-auto rounded-xl bg-brand-card p-1 border border-[rgba(255,255,255,0.06)]">
           <button
             onClick={() => setViewMonth("this_month")}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition cursor-pointer ${
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-[10px] font-bold tracking-wider uppercase transition cursor-pointer ${
               viewMonth === "this_month"
-                ? "bg-brand-accent text-brand-bg"
+                ? "bg-brand-accent text-brand-bg shadow-lg shadow-brand-accent/20"
                 : "text-brand-text/50 hover:text-brand-text"
             }`}
           >
@@ -146,9 +146,9 @@ const Graphs = ({ transactions }) => {
           </button>
           <button
             onClick={() => setViewMonth("last_month")}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition cursor-pointer ${
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-[10px] font-bold tracking-wider uppercase transition cursor-pointer ${
               viewMonth === "last_month"
-                ? "bg-brand-accent text-brand-bg"
+                ? "bg-brand-accent text-brand-bg shadow-lg shadow-brand-accent/20"
                 : "text-brand-text/50 hover:text-brand-text"
             }`}
           >
@@ -158,12 +158,12 @@ const Graphs = ({ transactions }) => {
       </div>
 
       {!hasExpenses ? (
-        <div className="glass-panel p-16 rounded-3xl text-center max-w-xl mx-auto space-y-4">
-          <BarChart3 className="h-10 w-10 text-brand-accent/20 mx-auto" />
-          <h3 className="text-base font-bold font-heading text-brand-text uppercase">
+        <div className="glass-panel p-10 md:p-16 rounded-2xl md:rounded-3xl text-center max-w-xl mx-auto space-y-4">
+          <BarChart3 className="h-8 md:h-10 w-8 md:w-10 text-brand-accent/20 mx-auto" />
+          <h3 className="text-sm md:text-base font-bold font-heading text-brand-text uppercase">
             No Plotting Data Available
           </h3>
-          <p className="text-xs font-mono text-brand-text/50 leading-relaxed">
+          <p className="text-[10px] md:text-xs font-mono text-brand-text/50 leading-relaxed">
             Record expense or saving items in the Tracker terminal to draw the visualizer charts.
           </p>
         </div>
@@ -171,11 +171,11 @@ const Graphs = ({ transactions }) => {
         <>
           {/* 2. TOP DYNAMIC INSIGHT CHIPS (Small subtle pills) */}
           {insightChips.length > 0 && (
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
               {insightChips.map((chip) => (
                 <div
                   key={chip.id}
-                  className={`px-3 py-1.5 rounded-full border text-[10px] font-mono tracking-wide ${chip.style}`}
+                  className={`px-3 py-1.5 rounded-lg md:rounded-full border text-[9px] md:text-[10px] font-mono tracking-wide flex items-center justify-center text-center ${chip.style}`}
                 >
                   {chip.text}
                 </div>
@@ -184,16 +184,16 @@ const Graphs = ({ transactions }) => {
           )}
 
           {/* 3. CHARTS GRID (Clean two-column spacious grids) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
             
             {/* Weekly Spending Bar Chart */}
-            <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+            <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
               <div className="mb-6">
-                <h3 className="text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+                <h3 className="text-[9px] md:text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
                   Last 7 Days Outflows
                 </h3>
               </div>
-              <div className="flex-1 w-full min-h-[220px]">
+              <div className="flex-1 w-full min-h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
@@ -202,13 +202,13 @@ const Graphs = ({ transactions }) => {
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <YAxis
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(0, 230, 118, 0.02)" }} />
                     <Bar dataKey="amount" fill="#ff4444" radius={[4, 4, 0, 0]} maxBarSize={28} />
@@ -218,13 +218,13 @@ const Graphs = ({ transactions }) => {
             </div>
 
             {/* Week-over-Week Comparison */}
-            <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+            <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
               <div className="mb-6">
-                <h3 className="text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+                <h3 className="text-[9px] md:text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
                   Weekly Outflow Comparison
                 </h3>
               </div>
-              <div className="flex-1 w-full min-h-[220px]">
+              <div className="flex-1 w-full min-h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={wowData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
@@ -233,19 +233,19 @@ const Graphs = ({ transactions }) => {
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <YAxis
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(0, 230, 118, 0.02)" }} />
                     <Legend
                       verticalAlign="top"
                       height={36}
-                      wrapperStyle={{ fontSize: 9, fontFamily: "IBM Plex Mono", color: "rgba(255,255,255,0.4)" }}
+                      wrapperStyle={{ fontSize: 8, fontFamily: "IBM Plex Mono", color: "rgba(255,255,255,0.4)" }}
                     />
                     <Bar dataKey="This Week" fill="#ff4444" radius={[3, 3, 0, 0]} maxBarSize={12} />
                     <Bar dataKey="Last Week" fill="rgba(255, 68, 68, 0.2)" radius={[3, 3, 0, 0]} maxBarSize={12} />
@@ -255,13 +255,13 @@ const Graphs = ({ transactions }) => {
             </div>
 
             {/* Monthly Line Chart (Expenses vs Savings) */}
-            <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+            <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
               <div className="mb-6">
-                <h3 className="text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+                <h3 className="text-[9px] md:text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
                   Daily Flow Timelines
                 </h3>
               </div>
-              <div className="flex-1 w-full min-h-[220px]">
+              <div className="flex-1 w-full min-h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={monthlyLineData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" />
@@ -270,19 +270,19 @@ const Graphs = ({ transactions }) => {
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <YAxis
                       stroke="rgba(224, 255, 232, 0.15)"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <Tooltip content={<ChartTooltip />} />
                     <Legend
                       verticalAlign="top"
                       height={36}
-                      wrapperStyle={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                      wrapperStyle={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                     />
                     <Line
                       type="monotone"
@@ -308,26 +308,26 @@ const Graphs = ({ transactions }) => {
             </div>
 
             {/* Category Pie / Donut Chart */}
-            <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+            <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
               <div className="mb-6">
-                <h3 className="text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+                <h3 className="text-[9px] md:text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
                   Outflows by Sector
                 </h3>
               </div>
-              <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 min-h-[220px]">
+              <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8 min-h-[250px]">
                 {categoryPieData.length === 0 ? (
-                  <div className="text-xs font-mono text-brand-text/30">No recorded outflows</div>
+                  <div className="text-[10px] font-mono text-brand-text/30">No recorded outflows</div>
                 ) : (
                   <>
-                    <div className="w-40 h-40 shrink-0 relative">
+                    <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
                             data={categoryPieData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={50}
-                            outerRadius={68}
+                            innerRadius={45}
+                            outerRadius={60}
                             paddingAngle={3}
                             dataKey="value"
                           >
@@ -339,10 +339,10 @@ const Graphs = ({ transactions }) => {
                       </ResponsiveContainer>
                       {/* Center value */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-[8px] font-bold text-brand-text/30 uppercase tracking-widest font-heading">
+                        <span className="text-[7px] font-bold text-brand-text/30 uppercase tracking-widest font-heading">
                           Total
                         </span>
-                        <span className="text-xs font-bold font-mono text-brand-text">
+                        <span className="text-[10px] md:text-xs font-bold font-mono text-brand-text">
                           {formatCurrency(categoryPieData.reduce((sum, item) => sum + item.value, 0))}
                         </span>
                       </div>
@@ -369,15 +369,15 @@ const Graphs = ({ transactions }) => {
             </div>
 
             {/* Payment Mode Bar Chart */}
-            <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+            <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
               <div className="mb-6">
-                <h3 className="text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+                <h3 className="text-[9px] md:text-xs font-bold text-brand-text/40 uppercase tracking-widest font-heading">
                   Volume by Gateway
                 </h3>
               </div>
-              <div className="flex-1 w-full min-h-[220px]">
+              <div className="flex-1 w-full min-h-[250px]">
                 {paymentModeData.filter((d) => d.amount > 0).length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-xs font-mono text-brand-text/30">
+                  <div className="h-full flex items-center justify-center text-[10px] font-mono text-brand-text/30">
                     No payment gateway transactions
                   </div>
                 ) : (
@@ -389,13 +389,13 @@ const Graphs = ({ transactions }) => {
                         stroke="rgba(224, 255, 232, 0.15)"
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                        tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                       />
                       <YAxis
                         stroke="rgba(224, 255, 232, 0.15)"
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                        tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                       />
                       <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(255,255,255,0.01)" }} />
                       <Bar dataKey="amount" fill="#00e676" radius={[4, 4, 0, 0]} maxBarSize={30}>

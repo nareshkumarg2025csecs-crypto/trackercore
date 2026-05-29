@@ -13,7 +13,7 @@ const Calculator = () => {
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isOpen && calcRef.current && !calcRef.current.contains(event.target) && !event.target.closest('.calc-trigger-btn')) {
+      if (isOpen && calcRef.current && !calcRef.current.contains(event.target) && !event.target.closest(".calc-trigger-btn")) {
         setIsOpen(false);
       }
     };
@@ -98,29 +98,29 @@ const Calculator = () => {
   }, [isOpen, expression]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
       
       {/* Floating Action Button */}
       <button
         onClick={toggleOpen}
-        className="calc-trigger-btn flex items-center justify-center h-10 w-10 rounded-full bg-brand-card/85 border border-[rgba(255,255,255,0.08)] text-brand-text/60 hover:text-brand-accent hover:border-brand-accent/40 transition-all duration-300 shadow-lg cursor-pointer"
+        className="calc-trigger-btn flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-brand-card/85 border border-[rgba(255,255,255,0.08)] text-brand-text/60 hover:text-brand-accent hover:border-brand-accent/40 transition-all duration-300 shadow-lg cursor-pointer backdrop-blur-md"
         title="Toggle Financial Calculator"
       >
-        {isOpen ? <X className="h-4.5 w-4.5" /> : <CalcIcon className="h-4.5 w-4.5" />}
+        {isOpen ? <X className="h-4.5 w-4.5 sm:h-5 sm:w-5" /> : <CalcIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />}
       </button>
 
       {/* Calculator Popup Panel */}
       {isOpen && (
         <div
           ref={calcRef}
-          className="glass-panel w-72 rounded-2xl p-4 mt-3 border border-brand-accent/25 shadow-2xl animate-slideup"
+          className="glass-panel w-[calc(100vw-48px)] sm:w-72 max-w-[320px] rounded-2xl p-4 mt-3 border border-brand-accent/25 shadow-2xl animate-fade-in sm:animate-slideup"
         >
           {/* Display */}
           <div className="bg-brand-bg/80 border border-brand-accent/10 rounded-xl p-3 mb-4 text-right overflow-hidden min-h-[70px] flex flex-col justify-between">
-            <div className="text-xs text-brand-text/40 font-mono break-all truncate">
+            <div className="text-[10px] sm:text-xs text-brand-text/40 font-mono break-all truncate">
               {expression || "0"}
             </div>
-            <div className="text-xl font-bold font-mono text-brand-accent neon-text-glow truncate">
+            <div className="text-lg sm:text-xl font-bold font-mono text-brand-accent neon-text-glow truncate">
               {result || "= 0"}
             </div>
           </div>
@@ -130,77 +130,77 @@ const Calculator = () => {
             {/* Row 1 */}
             <button
               onClick={handleClear}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-danger/10 text-brand-danger border border-brand-danger/25 hover:bg-brand-danger hover:text-white transition duration-200"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-danger/10 text-brand-danger border border-brand-danger/25 hover:bg-brand-danger hover:text-white transition duration-200 cursor-pointer"
             >
               C
             </button>
             <button
               onClick={() => handleInput("%")}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-accent/10 hover:text-brand-accent border border-brand-accent/5 transition duration-200"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-accent/10 hover:text-brand-accent border border-brand-accent/5 transition duration-200 cursor-pointer"
             >
               %
             </button>
             <button
               onClick={handleBackspace}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-accent/10 hover:text-brand-accent border border-brand-accent/5 transition duration-200 flex items-center justify-center"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-accent/10 hover:text-brand-accent border border-brand-accent/5 transition duration-200 flex items-center justify-center cursor-pointer"
             >
               <Delete className="h-4 w-4" />
             </button>
             <button
               onClick={() => handleInput("/")}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/25 hover:bg-brand-accent hover:text-brand-bg transition duration-200"
+              className="py-3 rounded-xl text-sm font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-brand-bg transition duration-200 cursor-pointer"
             >
-              Ã·
+              ÷
             </button>
 
             {/* Row 2 */}
             <button
               onClick={() => handleInput("7")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               7
             </button>
             <button
               onClick={() => handleInput("8")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               8
             </button>
             <button
               onClick={() => handleInput("9")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               9
             </button>
             <button
               onClick={() => handleInput("*")}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/25 hover:bg-brand-accent hover:text-brand-bg transition duration-200"
+              className="py-3 rounded-xl text-sm font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-brand-bg transition duration-200 cursor-pointer"
             >
-              Ã—
+              ×
             </button>
 
             {/* Row 3 */}
             <button
               onClick={() => handleInput("4")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               4
             </button>
             <button
               onClick={() => handleInput("5")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               5
             </button>
             <button
               onClick={() => handleInput("6")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               6
             </button>
             <button
               onClick={() => handleInput("-")}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/25 hover:bg-brand-accent hover:text-brand-bg transition duration-200"
+              className="py-3 rounded-xl text-sm font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-brand-bg transition duration-200 cursor-pointer"
             >
               -
             </button>
@@ -208,25 +208,25 @@ const Calculator = () => {
             {/* Row 4 */}
             <button
               onClick={() => handleInput("1")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               1
             </button>
             <button
               onClick={() => handleInput("2")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               2
             </button>
             <button
               onClick={() => handleInput("3")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               3
             </button>
             <button
               onClick={() => handleInput("+")}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/25 hover:bg-brand-accent hover:text-brand-bg transition duration-200"
+              className="py-3 rounded-xl text-sm font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-brand-bg transition duration-200 cursor-pointer"
             >
               +
             </button>
@@ -234,19 +234,19 @@ const Calculator = () => {
             {/* Row 5 */}
             <button
               onClick={() => handleInput("0")}
-              className="col-span-2 py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl col-span-2 text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               0
             </button>
             <button
               onClick={() => handleInput(".")}
-              className="py-3 rounded-lg text-sm font-medium bg-brand-card text-brand-text hover:bg-brand-bg transition duration-200 border border-brand-accent/5"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-card text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.04)] transition duration-200 cursor-pointer"
             >
               .
             </button>
             <button
               onClick={handleCalculate}
-              className="py-3 rounded-lg text-xs font-bold bg-brand-accent text-brand-bg hover:shadow-[0_0_10px_rgba(0,230,118,0.5)] transition duration-200"
+              className="py-3 rounded-xl text-xs font-bold bg-brand-accent text-brand-bg border border-brand-accent hover:bg-brand-accent/90 transition duration-200 cursor-pointer"
             >
               =
             </button>

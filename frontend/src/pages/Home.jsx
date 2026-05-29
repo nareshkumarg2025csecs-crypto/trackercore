@@ -123,7 +123,7 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
+    <div className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-12 space-y-8 md:space-y-12">
       <BalancePrompt 
         show={showBalancePrompt} 
         isNewUser={isNewUser} 
@@ -140,18 +140,18 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
               {formatDate(getTodayISTDateString())}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-text font-heading">
+          <h1 className="text-xl md:text-3xl font-extrabold tracking-tight text-brand-text font-heading text-left">
             {greeting}, {userName}
           </h1>
-          <p className="text-xs text-brand-text/50 font-mono">
+          <p className="text-[10px] md:text-xs text-brand-text/50 font-mono text-left">
             Command terminal dashboard and capital reserves logs
           </p>
         </div>
 
-        <div className="shrink-0 flex items-center">
+        <div className="w-full md:w-auto">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-brand-accent text-brand-bg font-extrabold tracking-wider text-xs border border-brand-accent hover:bg-brand-accent/90 transition-all duration-200 font-heading cursor-pointer"
+            className="w-full md:w-auto flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-brand-accent text-brand-bg font-extrabold tracking-wider text-xs border border-brand-accent hover:bg-brand-accent/90 transition-all duration-200 font-heading cursor-pointer"
           >
             <Plus className="h-4 w-4 stroke-[3]" />
             <span>RECORD TRANSACTION</span>
@@ -160,54 +160,54 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
       </div>
 
       {/* 2. Prominent Live Bank Balance Card */}
-      <div className="glass-panel rounded-3xl p-8 border border-[rgba(255,255,255,0.06)] text-center space-y-2">
-        <span className="text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+      <div className="glass-panel rounded-2xl md:rounded-3xl p-6 md:p-8 border border-[rgba(255,255,255,0.06)] text-center space-y-2">
+        <span className="text-[8px] md:text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
           Available Bank Balance
         </span>
-        <div className="text-4xl sm:text-5xl font-bold font-mono tracking-tight text-brand-text neon-text-glow">
+        <div className="text-3xl md:text-5xl font-bold font-mono tracking-tight text-brand-text neon-text-glow">
           {formatCurrency(liveBalance)}
         </div>
       </div>
 
       {/* 3. Monthly Flows (Deposited / Withdrawn) side-by-side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Deposited */}
-        <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col justify-between min-h-[140px]">
+        <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col justify-between min-h-[120px] md:min-h-[140px]">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+            <span className="text-[8px] md:text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
               Deposited (Current Month)
             </span>
             <div className="p-2 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-brand-accent">
-              <ArrowUpRight className="h-4.5 w-4.5" />
+              <ArrowUpRight className="h-4 w-4 md:h-4.5 md:w-4.5" />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold font-mono text-brand-accent">
+          <div className="text-xl md:text-3xl font-bold font-mono text-brand-accent">
             {formatCurrency(monthDeposited)}
           </div>
         </div>
 
         {/* Withdrawn */}
-        <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col justify-between min-h-[140px]">
+        <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col justify-between min-h-[120px] md:min-h-[140px]">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
+            <span className="text-[8px] md:text-[10px] font-bold text-brand-text/40 uppercase tracking-widest font-heading">
               Withdrawn (Current Month)
             </span>
             <div className="p-2 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-brand-danger">
-              <ArrowDownLeft className="h-4.5 w-4.5" />
+              <ArrowDownLeft className="h-4 w-4 md:h-4.5 md:w-4.5" />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold font-mono text-brand-danger">
+          <div className="text-xl md:text-3xl font-bold font-mono text-brand-danger">
             {formatCurrency(monthWithdrawn)}
           </div>
         </div>
       </div>
 
       {/* 4. Three Summary Cards: Today, This Week, This Month Withdrawn */}
-      <div className="space-y-6">
-        <h2 className="text-xs font-bold text-brand-text/40 uppercase tracking-wider font-heading">
+      <div className="space-y-4 md:space-y-6">
+        <h2 className="text-[10px] md:text-xs font-bold text-brand-text/40 uppercase tracking-wider font-heading">
           Outflow Summaries
         </h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <SummaryCard
             title="Today Withdrawn"
             value={formatCurrency(todayWithdrawn)}
@@ -227,21 +227,21 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
       </div>
 
       {/* 5. Main Grid: Weekly Chart & Minimal table */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Spending Trend Chart */}
-        <div className="lg:col-span-2 glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+        <div className="lg:col-span-2 glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
           <div className="mb-6">
-            <h2 className="text-sm font-bold text-brand-text font-heading uppercase tracking-wide">
+            <h2 className="text-xs md:text-sm font-bold text-brand-text font-heading uppercase tracking-wide">
               Weekly Outflows
             </h2>
-            <p className="text-[10px] text-brand-text/40 font-mono mt-0.5">
+            <p className="text-[9px] md:text-[10px] text-brand-text/40 font-mono mt-0.5">
               Daily withdrawn statistics for the last 7 days
             </p>
           </div>
 
-          <div className="flex-1 w-full min-h-[220px]">
+          <div className="flex-1 w-full min-h-[250px]">
             {transactions.filter((t) => t.type === "expense").length === 0 ? (
-              <div className="h-full flex items-center justify-center text-xs font-mono text-brand-text/30">
+              <div className="h-full flex items-center justify-center text-[10px] font-mono text-brand-text/30">
                 No outflows recorded
               </div>
             ) : (
@@ -252,13 +252,13 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
                     stroke="rgba(224, 255, 232, 0.2)"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                    tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                   />
                   <YAxis
                     stroke="rgba(224, 255, 232, 0.2)"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 9, fontFamily: "IBM Plex Mono" }}
+                    tick={{ fontSize: 8, fontFamily: "IBM Plex Mono" }}
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255, 68, 68, 0.03)" }} />
                   <Bar
@@ -275,19 +275,19 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
         </div>
 
         {/* Minimal Recent Activity Table */}
-        <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[350px]">
+        <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)] flex flex-col min-h-[300px] md:min-h-[350px]">
           <div className="mb-6">
-            <h2 className="text-sm font-bold text-brand-text font-heading uppercase tracking-wide">
+            <h2 className="text-xs md:text-sm font-bold text-brand-text font-heading uppercase tracking-wide">
               Recent Lines
             </h2>
-            <p className="text-[10px] text-brand-text/40 font-mono mt-0.5">
+            <p className="text-[9px] md:text-[10px] text-brand-text/40 font-mono mt-0.5">
               Last 5 transactions processed
             </p>
           </div>
 
           <div className="flex-1 overflow-x-auto">
             {recentTransactions.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-xs font-mono text-brand-text/30">
+              <div className="h-full flex items-center justify-center text-[10px] font-mono text-brand-text/30">
                 No active records in ledger
               </div>
             ) : (
@@ -300,24 +300,35 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
                         key={t.id}
                         className="border-b border-[rgba(255,255,255,0.03)] last:border-0 hover:bg-[rgba(255,255,255,0.01)]"
                       >
-                        <td className="py-3.5 pr-2">
+                        <td className="py-3 pr-2">
                           <div className={`p-1.5 rounded-md w-fit ${isSaving ? 'text-brand-accent bg-brand-accent/5' : 'text-brand-danger bg-brand-danger/5'}`}>
                             {isSaving ? (
-                              <ArrowUpRight className="h-3.5 w-3.5" />
+                              <ArrowUpRight className="h-3 w-3 md:h-3.5 md:w-3.5" />
                             ) : (
-                              <ArrowDownLeft className="h-3.5 w-3.5" />
+                              <ArrowDownLeft className="h-3 w-3 md:h-3.5 md:w-3.5" />
                             )}
                           </div>
                         </td>
-                        <td className="py-3.5 px-2 max-w-[100px] truncate text-xs font-semibold text-brand-text">
+                        <td className="py-3 px-2 max-w-[80px] md:max-w-[100px] truncate text-[10px] md:text-xs font-semibold text-brand-text">
                           {t.title}
                         </td>
-                        <td className="py-3.5 px-2 text-right text-xs font-mono font-bold">
+                        <td className="py-3 px-2 text-right text-[10px] md:text-xs font-mono font-bold">
                           <span className={isSaving ? "text-brand-accent" : "text-brand-danger"}>
                             {formatCurrency(t.amount)}
                           </span>
                         </td>
-                        <td className="py-3.5 pl-2 text-right text-[9px] font-mono text-brand-text/30">
+                        <td className="py-3 pl-2 text-right text-[8px] md:text-[9px] font-mono text-brand-text/30">
+                          {formatDate(t.date)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </div>
                           {formatDate(t.date)}
                         </td>
                       </tr>

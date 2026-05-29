@@ -21,15 +21,15 @@ const BalancePrompt = ({ show, isNewUser, onSave, onKeep, isSaving }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="max-w-md w-full bg-[#111a15] border border-white/10 rounded-3xl p-8 space-y-6 shadow-2xl animate-modal text-white">
+      <div className="w-[92%] sm:w-full max-w-md bg-[#111a15] border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl animate-modal text-white">
         <div className="space-y-2 text-center">
-          <div className="mx-auto w-12 h-12 bg-[#00e676]/10 rounded-full flex items-center justify-center mb-4">
-            <Database className="h-6 w-6 text-[#00e676]" />
+          <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-[#00e676]/10 rounded-full flex items-center justify-center mb-4">
+            <Database className="h-5 w-5 sm:h-6 sm:w-6 text-[#00e676]" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight">
             {isNewUser ? "Welcome to TrackerCore" : "Good morning!"}
           </h1>
-          <p className="text-sm text-white/60">
+          <p className="text-[11px] sm:text-sm text-white/60">
             {isNewUser 
               ? "Enter your current bank balance to get started." 
               : "New day — would you like to update your opening balance?"}

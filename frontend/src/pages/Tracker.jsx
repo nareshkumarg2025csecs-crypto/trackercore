@@ -224,40 +224,40 @@ const Tracker = ({
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
+    <div className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-12 space-y-8 md:space-y-12">
       
       {/* 1. Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-[rgba(255,255,255,0.06)] pb-8">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-wider text-brand-text font-heading uppercase">
+          <h1 className="text-lg md:text-2xl font-bold tracking-wider text-brand-text font-heading uppercase text-left">
             Ledger Terminal
           </h1>
-          <p className="text-xs text-brand-text/50 font-mono">
+          <p className="text-[10px] md:text-xs text-brand-text/50 font-mono text-left">
             Transactional ledger logs and export tools
           </p>
         </div>
 
         {/* Action Triggers */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-3">
           <button
             onClick={handleExportWeeklyPDF}
-            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
+            className="flex items-center justify-center space-x-1.5 px-3 md:px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-[10px] md:text-xs font-bold font-mono transition cursor-pointer"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3 md:h-3.5 w-3 md:w-3.5" />
             <span>WEEKLY PDF</span>
           </button>
           
           <button
             onClick={handleExportMonthlyPDF}
-            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
+            className="flex items-center justify-center space-x-1.5 px-3 md:px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-[10px] md:text-xs font-bold font-mono transition cursor-pointer"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3 md:h-3.5 w-3 md:w-3.5" />
             <span>MONTHLY PDF</span>
           </button>
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-accent text-brand-bg text-xs font-bold hover:bg-brand-accent/90 transition-all font-heading cursor-pointer"
+            className="col-span-2 md:col-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-accent text-brand-bg text-[10px] md:text-xs font-bold hover:bg-brand-accent/90 transition-all font-heading cursor-pointer"
           >
             <Plus className="h-4 w-4 stroke-[3]" />
             <span>NEW ENTRY</span>
@@ -266,12 +266,12 @@ const Tracker = ({
       </div>
 
       {/* 2. Horizontal single-row Filter Bar */}
-      <div className="glass-panel rounded-3xl p-7 border border-[rgba(255,255,255,0.06)]">
+      <div className="glass-panel rounded-2xl md:rounded-3xl p-5 md:p-7 border border-[rgba(255,255,255,0.06)]">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
           
           {/* Search particular */}
-          <div className="md:col-span-2 relative">
-            <label className="block text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
+          <div className="sm:col-span-2 md:col-span-2 relative text-left">
+            <label className="block text-[8px] md:text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
               Description Search
             </label>
             <div className="relative">
@@ -280,21 +280,21 @@ const Tracker = ({
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-3 py-2 text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition"
+                className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-3 py-2 text-[11px] md:text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition shadow-inner"
               />
-              <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-brand-text/30" />
+              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-brand-text/30" />
             </div>
           </div>
 
           {/* Category drop */}
-          <div>
-            <label className="block text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
+          <div className="text-left">
+            <label className="block text-[8px] md:text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
               Category
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition"
+              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-[11px] md:text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition shadow-inner"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -305,14 +305,14 @@ const Tracker = ({
           </div>
 
           {/* Mode drop */}
-          <div>
-            <label className="block text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
+          <div className="text-left">
+            <label className="block text-[8px] md:text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
               Mode
             </label>
             <select
               value={paymentMode}
               onChange={(e) => setPaymentMode(e.target.value)}
-              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition"
+              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-[11px] md:text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition shadow-inner"
             >
               {paymentModes.map((mode) => (
                 <option key={mode} value={mode}>
@@ -323,29 +323,29 @@ const Tracker = ({
           </div>
 
           {/* Date from */}
-          <div>
-            <label className="block text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
+          <div className="text-left">
+            <label className="block text-[8px] md:text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
               From
             </label>
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition"
+              className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-[11px] md:text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition shadow-inner"
             />
           </div>
 
           {/* Date to & reset */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 text-left">
             <div className="flex-1">
-              <label className="block text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
+              <label className="block text-[8px] md:text-[9px] font-bold text-brand-text/40 uppercase font-heading mb-1.5">
                 To
               </label>
               <input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition"
+                className="w-full bg-brand-bg border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-[11px] md:text-xs text-brand-text font-mono focus:outline-none focus:border-brand-accent/30 transition shadow-inner"
               />
             </div>
             <button
@@ -362,10 +362,10 @@ const Tracker = ({
 
       {/* Bulk triggers */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center space-x-2 animate-modal">
+        <div className="flex items-center space-x-2 animate-modal grow">
           <button
             onClick={() => setIsBulkConfirmOpen(true)}
-            className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-brand-danger/10 border border-brand-danger/25 hover:bg-brand-danger hover:text-white text-brand-danger text-xs font-bold font-mono transition cursor-pointer"
+            className="w-full md:w-auto flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-danger/10 border border-brand-danger/25 hover:bg-brand-danger hover:text-white text-brand-danger text-[10px] md:text-xs font-bold font-mono transition cursor-pointer"
           >
             <Trash2 className="h-4 w-4" />
             <span>DELETE SELECTED ({selectedIds.length})</span>
@@ -374,12 +374,12 @@ const Tracker = ({
       )}
 
       {/* 3. Very Wide and Spacious Transactions Ledger Table */}
-      <div className="glass-panel rounded-3xl overflow-hidden border border-[rgba(255,255,255,0.06)] shadow-2xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[900px]">
+      <div className="glass-panel rounded-2xl md:rounded-3xl border border-[rgba(255,255,255,0.06)] shadow-2xl overflow-hidden">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-brand-accent/20">
+          <table className="w-full text-left border-collapse min-w-[800px] md:min-w-[900px]">
             <thead>
-              <tr className="bg-brand-card/80 border-b border-[rgba(255,255,255,0.06)] text-[10px] font-bold font-heading text-brand-accent uppercase tracking-widest">
-                <th className="py-5 px-6 w-14 text-center">
+              <tr className="bg-brand-card/80 border-b border-[rgba(255,255,255,0.06)] text-[9px] md:text-[10px] font-bold font-heading text-brand-accent uppercase tracking-widest">
+                <th className="py-4 md:py-5 px-4 md:px-6 w-14 text-center">
                   <input
                     type="checkbox"
                     checked={
@@ -390,17 +390,17 @@ const Tracker = ({
                     className="h-4 w-4 rounded bg-brand-bg border-[rgba(255,255,255,0.08)] accent-brand-accent cursor-pointer focus:ring-0"
                   />
                 </th>
-                <th className="py-5 px-6">Date</th>
-                <th className="py-5 px-6">Description</th>
-                <th className="py-5 px-6">Category</th>
-                <th className="py-5 px-6">Mode</th>
-                <th className="py-5 px-6 text-right">Deposited</th>
-                <th className="py-5 px-6 text-right">Withdrawn</th>
-                <th className="py-5 px-6 text-right">Balance</th>
-                <th className="py-5 px-6 text-center w-28">Actions</th>
+                <th className="py-4 md:py-5 px-4 md:px-6">Date</th>
+                <th className="py-4 md:py-5 px-4 md:px-6">Description</th>
+                <th className="py-4 md:py-5 px-4 md:px-6">Category</th>
+                <th className="py-4 md:py-5 px-4 md:px-6">Mode</th>
+                <th className="py-4 md:py-5 px-4 md:px-6 text-right">Deposited</th>
+                <th className="py-4 md:py-5 px-4 md:px-6 text-right">Withdrawn</th>
+                <th className="py-4 md:py-5 px-4 md:px-6 text-right">Balance</th>
+                <th className="py-4 md:py-5 px-4 md:px-6 text-center w-28">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(255,255,255,0.03)] font-mono text-xs text-brand-text/90">
+            <tbody className="divide-y divide-[rgba(255,255,255,0.03)] font-mono text-[10px] md:text-xs text-brand-text/90">
               {filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan="9" className="py-16 px-6 text-center text-brand-text/30">
@@ -424,7 +424,7 @@ const Tracker = ({
                       }`}
                     >
                       {/* Checkbox */}
-                      <td className="py-5 px-6 text-center">
+                      <td className="py-4 md:py-5 px-4 md:px-6 text-center">
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -434,63 +434,63 @@ const Tracker = ({
                       </td>
 
                       {/* Date */}
-                      <td className="py-5 px-6 whitespace-nowrap text-brand-text/40 font-semibold">
+                      <td className="py-4 md:py-5 px-4 md:px-6 whitespace-nowrap text-brand-text/40 font-semibold">
                         {formatDate(t.date)}
                       </td>
 
                       {/* Description particulars */}
-                      <td className="py-5 px-6">
+                      <td className="py-4 md:py-5 px-4 md:px-6">
                         <div className="font-bold text-brand-text">{t.title}</div>
                         {t.note && (
-                          <div className="text-[10px] text-brand-text/30 mt-0.5 truncate max-w-xs">
+                          <div className="text-[9px] md:text-[10px] text-brand-text/30 mt-0.5 truncate max-w-[80px] md:max-w-xs">
                             {t.note}
                           </div>
                         )}
                       </td>
 
                       {/* Category Badge */}
-                      <td className="py-5 px-6 whitespace-nowrap">
-                        <span className="text-[10px] font-semibold text-brand-text/60">
+                      <td className="py-4 md:py-5 px-4 md:px-6 whitespace-nowrap text-left">
+                        <span className="text-[9px] md:text-[10px] font-semibold text-brand-text/60">
                           {t.category}
                         </span>
                       </td>
 
                       {/* Mode */}
-                      <td className="py-5 px-6 whitespace-nowrap text-brand-text/50">
+                      <td className="py-4 md:py-5 px-4 md:px-6 whitespace-nowrap text-brand-text/50">
                         {t.paymentMode}
                       </td>
 
                       {/* Deposited */}
-                      <td className="py-5 px-6 text-right whitespace-nowrap font-bold text-brand-accent">
+                      <td className="py-4 md:py-5 px-4 md:px-6 text-right whitespace-nowrap font-bold text-brand-accent">
                         {isSaving ? formatCurrency(t.amount) : "-"}
                       </td>
 
                       {/* Withdrawn */}
-                      <td className="py-5 px-6 text-right whitespace-nowrap font-bold text-brand-danger">
+                      <td className="py-4 md:py-5 px-4 md:px-6 text-right whitespace-nowrap font-bold text-brand-danger">
                         {!isSaving ? formatCurrency(t.amount) : "-"}
                       </td>
 
                       {/* Running Balance */}
-                      <td className="py-5 px-6 text-right whitespace-nowrap font-bold text-brand-text">
+                      <td className="py-4 md:py-5 px-4 md:px-6 text-right whitespace-nowrap font-bold text-brand-text">
                         {formatCurrency(balanceVal)}
                       </td>
 
                       {/* Actions */}
-                      <td className="py-5 px-6 text-center whitespace-nowrap">
+                      <td className="py-4 md:py-5 px-4 md:px-6 text-center whitespace-nowrap">
                         <div className="inline-flex items-center space-x-2">
                           <button
                             onClick={() => handleOpenEdit(t)}
                             className="p-1.5 rounded-lg bg-brand-card hover:bg-brand-bg text-brand-text/40 hover:text-brand-accent border border-[rgba(255,255,255,0.06)] transition cursor-pointer"
                             title="Edit Record"
                           >
-                            <Edit2 className="h-3.5 w-3.5" />
+                            <Edit2 className="h-3 w-3 md:h-3.5 md:w-3.5" />
                           </button>
                           <button
                             onClick={() => handleOpenDelete(t.id)}
                             className="p-1.5 rounded-lg bg-brand-card hover:bg-brand-danger/10 text-brand-text/40 hover:text-brand-danger border border-[rgba(255,255,255,0.06)] transition cursor-pointer"
                             title="Delete Record"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3 md:h-3.5 md:w-3.5" />
                           </button>
                         </div>
                       </td>

@@ -62,7 +62,7 @@ const AppContent = () => {
 
       {/* Global Floating Toast Alert */}
       {toast.visible && user && (
-        <div className="fixed top-24 right-6 z-50 animate-modal">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto sm:left-auto sm:right-6 sm:top-24 sm:translate-x-0 z-[100] animate-modal">
           <div className={`glass-panel rounded-xl px-4 py-3 flex items-center space-x-3 shadow-2xl border ${
             toast.type === "success"
               ? "border-brand-accent/40 bg-brand-accent/5 text-brand-accent"

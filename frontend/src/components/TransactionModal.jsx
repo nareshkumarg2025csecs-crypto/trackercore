@@ -257,17 +257,17 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex items-center justify-end space-x-3">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-xs font-bold text-brand-text/60 hover:text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.06)] transition cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold text-brand-text/60 hover:text-brand-text hover:bg-brand-bg border border-[rgba(255,255,255,0.06)] transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg text-xs font-bold bg-brand-accent text-brand-bg border border-brand-accent hover:bg-brand-accent/90 transition font-heading tracking-wider cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-brand-accent text-brand-bg border border-brand-accent hover:bg-brand-accent/90 transition font-heading tracking-wider cursor-pointer"
             >
               {isEdit ? "SAVE CHANGES" : "ADD TRANSACTION"}
             </button>
