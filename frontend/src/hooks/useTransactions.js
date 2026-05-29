@@ -146,3 +146,17 @@ export const useTransactions = (userUid, showToast) => {
     isDataLoading
   };
 };
+  };
+
+  return {
+    transactions,
+    startingBalance,
+    updateStartingBalance,
+    addTransaction,
+    editTransaction,
+    deleteTransaction,
+    bulkDeleteTransactions,
+    clearAllTransactions,
+    importTransactions,
+  };
+};
