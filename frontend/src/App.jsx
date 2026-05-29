@@ -21,7 +21,7 @@ const Tips = React.lazy(() => import("./pages/Tips"));
 const Login = React.lazy(() => import("./pages/Login"));
 
 const AppContent = () => {
-  const { user } = useAuth();
+  const { user, userData, updateStartingBalance, skipBalanceUpdate, getISTDate } = useAuth();
 
   // Toast state
   const [toast, setToast] = useState({
@@ -40,40 +40,77 @@ const AppContent = () => {
   // Central State Hook - Scoped by logged-in user's UID!
   const {
     transactions,
-    startingBalance,
-    updateStartingBalance,
+    isDataLoading,
     addTransaction,
     editTransaction,
     deleteTransaction,
     bulkDeleteTransactions,
-    clearAllTransactions,
+    importTransactions,
   } = useTransactions(user?.uid, showToast);
 
   // Welcome modal balance field
   const [tempBalance, setTempBalance] = useState("");
   const [balanceError, setBalanceError] = useState("");
 
-  // DB reset confirmation
-  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  // Daily Update Balance Prompt State
+  const [showDailyPrompt, setShowDailyPrompt] = useState(false);
 
-  const handleInitializeBalance = (e) => {
+  // Starting balance logic (Persistent from Firestore)
+  const startingBalance = userData?.startingBalance ?? null;
+  const balanceSetDate = userData?.balanceSetDate ?? null;
+
+  // Effect to check for daily balance update prompt
+  React.useEffect(() => {
+    if (user && userData) {
+      const today = getISTDate();
+      // If we have a balance but it wasn't set today, show the daily prompt
+      if (startingBalance !== null && balanceSetDate !== today) {
+        setShowDailyPrompt(true);
+      } else {
+        setShowDailyPrompt(false);
+      }
+    }
+  }, [user, userData, startingBalance, balanceSetDate]);
+
+  const handleInitializeBalance = async (e) => {
     e.preventDefault();
     const parsed = parseFloat(tempBalance);
     if (isNaN(parsed) || parsed < 0) {
       setBalanceError("Please enter a valid starting balance (0 or higher).");
       return;
     }
-    updateStartingBalance(parsed);
+    try {
+      await updateStartingBalance(parsed);
+      setShowDailyPrompt(false);
+      setTempBalance("");
+      showToast("Balance Updated Successfully ✅", "success");
+    } catch (err) {
+      showToast("Failed to update balance", "error");
+    }
   };
+
+  const handleKeepPreviousBalance = async () => {
+    try {
+      await skipBalanceUpdate();
+      setShowDailyPrompt(false);
+      showToast("Previous Balance Retained", "success");
+    } catch (err) {
+      showToast("Action failed", "error");
+    }
+  };
+
+  if (user && isDataLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col selection:bg-brand-accent/30 selection:text-brand-accent">
       
       {/* Sticky Header - active when startingBalance is set and user is authenticated */}
-      {startingBalance !== null && user && <Navbar />}
+      {startingBalance !== null && user && !showDailyPrompt && <Navbar />}
 
-      {/* FULL-SCREEN WELCOME BALANCE MODAL */}
-      {startingBalance === null && user && (
+      {/* FULL-SCREEN WELCOME BALANCE MODAL (FOR NEW USERS) */}
+      {user && startingBalance === null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-bg p-4">
           <div className="max-w-md w-full bg-brand-card border border-[rgba(255,255,255,0.06)] rounded-3xl p-8 space-y-6 shadow-2xl">
             <div className="space-y-2 text-center">
@@ -88,7 +125,7 @@ const AppContent = () => {
             <form onSubmit={handleInitializeBalance} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-brand-text/50 font-mono">
-                  Starting Bank Balance
+                  Current Bank Balance
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/40 font-mono text-sm">
@@ -120,6 +157,53 @@ const AppContent = () => {
                 <ArrowRight className="h-4 w-4" />
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* SUBTLE DAILY BALANCE UPDATE MODAL (FOR EXISTING USERS ON NEW DAY) */}
+      {user && showDailyPrompt && startingBalance !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="max-w-md w-full bg-brand-card border border-brand-accent/20 rounded-3xl p-8 space-y-6 shadow-2xl animate-modal">
+            <div className="space-y-2 text-center">
+              <div className="mx-auto w-12 h-12 bg-brand-accent/10 rounded-full flex items-center justify-center mb-4">
+                <Database className="h-6 w-6 text-brand-accent" />
+              </div>
+              <h1 className="text-lg font-bold tracking-tight text-brand-text">
+                Good morning, {user.displayName?.split(' ')[0]}!
+              </h1>
+              <p className="text-sm text-brand-text/60">
+                Would you like to update today's opening balance?
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/40 font-mono text-sm">₹</span>
+                <input
+                  type="number"
+                  placeholder={startingBalance.toFixed(2)}
+                  value={tempBalance}
+                  onChange={(e) => setTempBalance(e.target.value)}
+                  className="w-full bg-brand-bg/50 border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-4 py-3 text-sm font-mono text-brand-text focus:outline-none focus:border-brand-accent/30 transition"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleKeepPreviousBalance}
+                  className="py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-brand-text/60 font-mono text-[10px] uppercase font-bold hover:bg-white/5 transition"
+                >
+                  Keep Previous
+                </button>
+                <button
+                  onClick={handleInitializeBalance}
+                  className="py-3 rounded-xl bg-brand-accent text-brand-bg font-mono text-[10px] uppercase font-bold hover:bg-brand-accent/90 transition"
+                >
+                  Update Balance
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

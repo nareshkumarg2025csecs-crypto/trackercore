@@ -8,7 +8,7 @@ import {
   updateProfile,
   sendPasswordResetEmail
 } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db, googleProvider } from "../config/firebase";
 import LoadingScreen from "../components/LoadingScreen";
 
@@ -22,16 +22,43 @@ export const useAuth = () => {
   return context;
 };
 
+// Helper for IST Date
+export const getISTDate = () => {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(new Date()).split("/").join("-");
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exitingLoader, setExitingLoader] = useState(false);
 
   // Monitor auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    let unsubscribeSnapshot = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       
+      if (currentUser) {
+        // Real-time listener for user document (startingBalance, balanceSetDate)
+        unsubscribeSnapshot = onSnapshot(doc(db, "users", currentUser.uid), (snapshot) => {
+          if (snapshot.exists()) {
+            setUserData(snapshot.data());
+          } else {
+            setUserData(null);
+          }
+        });
+      } else {
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+        setUserData(null);
+      }
+
       // Delay unmounting the initial loader slightly for visual perfection of the 1.5s animation
       if (loading) {
         setTimeout(() => {
@@ -43,8 +70,40 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+    };
   }, []);
+
+  // Update starting balance in Firestore
+  const updateStartingBalance = async (balance) => {
+    if (!user) return;
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, {
+        startingBalance: parseFloat(balance),
+        balanceSetDate: getISTDate()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error updating balance:", error);
+      throw error;
+    }
+  };
+
+  // Skip updating balance for today (Keep Previous)
+  const skipBalanceUpdate = async () => {
+    if (!user || !userData) return;
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, {
+        balanceSetDate: getISTDate()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error skipping balance update:", error);
+      throw error;
+    }
+  };
 
   // Login with Email & Password
   const loginWithEmail = (email, password) => {
@@ -64,8 +123,7 @@ export const AuthProvider = ({ children }) => {
       await setDoc(userDocRef, {
         displayName: loggedUser.displayName || "Google User",
         email: loggedUser.email,
-        createdAt: new Date().toISOString(),
-        transactions: []
+        createdAt: new Date().toISOString()
       });
     }
 
@@ -84,8 +142,7 @@ export const AuthProvider = ({ children }) => {
     await setDoc(doc(db, "users", registeredUser.uid), {
       displayName: name,
       email: email,
-      createdAt: new Date().toISOString(),
-      transactions: []
+      createdAt: new Date().toISOString()
     });
 
     return userCredential;
@@ -97,18 +154,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Sign out
-  const logout = () => {
+  const logout = async () => {
+    setUserData(null); // Clear local data state
     return signOut(auth);
   };
 
   const value = {
     user,
+    userData,
     loading,
     loginWithEmail,
     loginWithGoogle,
     registerWithEmail,
     resetPassword,
-    logout
+    logout,
+    updateStartingBalance,
+    skipBalanceUpdate,
+    getISTDate
   };
 
   return (
