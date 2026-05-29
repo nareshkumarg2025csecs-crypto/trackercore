@@ -21,7 +21,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <span className="text-xl font-extrabold tracking-wider text-brand-accent neon-text-glow font-heading transition-transform group-hover:scale-105">
-              GREEN<span className="text-brand-text">LEDGER</span>
+              TRACKER<span className="text-brand-text">CORE</span>
             </span>
           </Link>
 
@@ -62,7 +62,7 @@ const Navbar = () => {
                 <button
                   onClick={logout}
                   className="flex items-center space-x-1 sm:space-x-1.5 rounded-lg px-2 py-1.5 text-[10px] font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white cursor-pointer uppercase tracking-wider"
-                  title="Disconnect ledger terminal session"
+                  title="Disconnect session"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Disconnect</span>
