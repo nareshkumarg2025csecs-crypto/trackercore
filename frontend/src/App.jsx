@@ -22,7 +22,7 @@ const Tips = React.lazy(() => import("./pages/Tips"));
 const Login = React.lazy(() => import("./pages/Login"));
 
 const AppContent = () => {
-  const { user } = useAuth();
+  const { user, userData, saveStartingBalance: updateStartingBalance } = useAuth();
 
   // Toast state
   const [toast, setToast] = useState({
@@ -41,9 +41,6 @@ const AppContent = () => {
   // Central State Hook - Scoped by logged-in user's UID!
   const {
     transactions,
-    startingBalance,
-    lastBalanceUpdate,
-    updateStartingBalance,
     addTransaction,
     editTransaction,
     deleteTransaction,
@@ -51,153 +48,17 @@ const AppContent = () => {
     clearAllTransactions,
   } = useTransactions(user?.uid, showToast);
 
-  // Daily balance prompt logic
-  const [showDailyPrompt, setShowDailyPrompt] = useState(false);
-
-  React.useEffect(() => {
-    if (startingBalance !== null && lastBalanceUpdate) {
-      const today = getTodayISTDateString();
-      const lastUpdate = lastBalanceUpdate.split("T")[0];
-      if (lastUpdate !== today) {
-        setShowDailyPrompt(true);
-      }
-    }
-  }, [startingBalance, lastBalanceUpdate]);
-
-  // Welcome modal balance field
-  const [tempBalance, setTempBalance] = useState("");
-  const [balanceError, setBalanceError] = useState("");
+  const startingBalance = userData.startingBalance;
+  const lastBalanceUpdate = userData.balanceSetDate;
 
   // DB reset confirmation
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
-
-  const handleInitializeBalance = (e) => {
-    e.preventDefault();
-    const parsed = parseFloat(tempBalance);
-    if (isNaN(parsed) || parsed < 0) {
-      setBalanceError("Please enter a valid starting balance (0 or higher).");
-      return;
-    }
-    updateStartingBalance(parsed);
-    setShowDailyPrompt(false);
-    setTempBalance("");
-  };
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col selection:bg-brand-accent/30 selection:text-brand-accent">
       
       {/* Sticky Header - active when startingBalance is set and user is authenticated */}
       {startingBalance !== null && user && <Navbar />}
-
-      {/* DAILY BALANCE RE-VERIFICATION PROMPT */}
-      {showDailyPrompt && user && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-brand-bg/80 backdrop-blur-md p-4">
-          <div className="max-w-md w-full bg-brand-card border border-brand-accent/20 rounded-3xl p-8 space-y-6 shadow-2xl animate-modal">
-            <div className="space-y-2 text-center">
-              <div className="inline-flex p-3 rounded-2xl bg-brand-accent/10 text-brand-accent mb-2">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <h2 className="text-xl font-bold tracking-wider font-heading uppercase text-brand-text">
-                Daily Balance Check
-              </h2>
-              <p className="text-xs text-brand-text/50 font-mono">
-                Confirm your current bank balance for today's ledger.
-              </p>
-            </div>
-
-            <form onSubmit={handleInitializeBalance} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-brand-text/50 font-mono">
-                  Current Bank Balance (INR)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/40 font-mono text-sm">
-                    ₹
-                  </span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    placeholder={getLiveBankBalance(transactions, startingBalance).toFixed(2)}
-                    value={tempBalance}
-                    onChange={(e) => setTempBalance(e.target.value)}
-                    className="w-full bg-brand-bg/50 border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-4 py-3 text-sm font-mono text-brand-text focus:outline-none focus:border-brand-accent/30 transition"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowDailyPrompt(false)}
-                  className="flex-1 py-3 rounded-xl bg-brand-bg border border-[rgba(255,255,255,0.06)] text-brand-text/60 font-mono text-[10px] uppercase font-bold hover:bg-brand-card transition cursor-pointer"
-                >
-                  Skip for now
-                </button>
-                <button
-                  type="submit"
-                  className="flex-[2] py-3 rounded-xl bg-brand-accent text-brand-bg font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 hover:bg-brand-accent/90 transition cursor-pointer"
-                >
-                  <span>Sync Balance</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* FULL-SCREEN WELCOME BALANCE MODAL */}
-      {startingBalance === null && user && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-bg p-4">
-          <div className="max-w-md w-full bg-brand-card border border-[rgba(255,255,255,0.06)] rounded-3xl p-8 space-y-6 shadow-2xl">
-            <div className="space-y-2 text-center">
-              <h1 className="text-xl font-bold tracking-wider font-heading uppercase text-brand-text">
-                Welcome to TrackerCore
-              </h1>
-              <p className="text-xs text-brand-text/50 font-mono">
-                Initialize your personal finance terminal ledger
-              </p>
-            </div>
-
-            <form onSubmit={handleInitializeBalance} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-brand-text/50 font-mono">
-                  Starting Bank Balance
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/40 font-mono text-sm">
-                    ₹
-                  </span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    placeholder="0.00"
-                    value={tempBalance}
-                    onChange={(e) => {
-                      setTempBalance(e.target.value);
-                      setBalanceError("");
-                    }}
-                    className="w-full bg-brand-bg/50 border border-[rgba(255,255,255,0.08)] rounded-xl pl-9 pr-4 py-3 text-sm font-mono text-brand-text focus:outline-none focus:border-brand-accent/30 transition"
-                  />
-                </div>
-                {balanceError && (
-                  <p className="text-[10px] font-mono text-brand-danger mt-1">{balanceError}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-brand-accent text-brand-bg font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 hover:bg-brand-accent/90 transition cursor-pointer"
-              >
-                <span>Initialize Ledger</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Global Floating Toast Alert */}
       {toast.visible && user && (
@@ -233,6 +94,7 @@ const AppContent = () => {
                     transactions={transactions}
                     startingBalance={startingBalance}
                     onAddTransaction={addTransaction}
+                    showToast={showToast}
                   />
                 </ProtectedRoute>
               }
@@ -292,7 +154,7 @@ const AppContent = () => {
                     Ledger Database
                   </div>
                   <div className="text-[10px] text-brand-text/60 mt-0.5">
-                    Starting Balance: <span className="text-brand-text font-bold">₹{startingBalance.toFixed(2)}</span> | Rows: <span className="text-brand-text font-bold">{transactions.length}</span>
+                    Starting Balance: <span className="text-brand-text font-bold">₹{(startingBalance || 0).toFixed(2)}</span> | Rows: <span className="text-brand-text font-bold">{transactions.length}</span>
                   </div>
                 </div>
               </div>

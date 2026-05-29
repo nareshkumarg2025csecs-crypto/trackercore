@@ -3,7 +3,9 @@ import { Plus, ArrowUpRight, ArrowDownLeft, Calendar } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import SummaryCard from "../components/SummaryCard";
 import TransactionModal from "../components/TransactionModal";
+import BalancePrompt from "../components/BalancePrompt";
 import { useAuth } from "../context/AuthContext";
+import { getTodayIST } from "../utils/dateIST";
 import {
   getTodayExpensesTotal,
   getThisWeekExpensesTotal,
@@ -16,11 +18,67 @@ import {
   getTodayISTDateString,
 } from "../utils/calculations";
 
-const Home = ({ transactions, startingBalance, onAddTransaction }) => {
+const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user } = useAuth();
+  const [showBalancePrompt, setShowBalancePrompt] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const { user, userData, saveStartingBalance } = useAuth();
   const userName = user?.displayName || "Operator";
   const [greeting, setGreeting] = useState("");
+
+  // Balance prompt logic
+  useEffect(() => {
+    if (!userData.loading) {
+      const today = getTodayIST();
+      if (userData.startingBalance === null) {
+        setIsNewUser(true);
+        setShowBalancePrompt(true);
+      } else if (userData.balanceSetDate !== today) {
+        setIsNewUser(false);
+        setShowBalancePrompt(true);
+      } else {
+        setShowBalancePrompt(false);
+      }
+    }
+  }, [userData]);
+
+  const handleSaveBalance = async (newBalance) => {
+    setIsSaving(true);
+    try {
+      await saveStartingBalance(newBalance, getTodayIST());
+      setShowBalancePrompt(false);
+      showToast("Balance updated successfully");
+    } catch (error) {
+      console.error("Failed to save balance:", error);
+      showToast("Cloud sync failed. Force closing modal for demo...", "error");
+      // BYPASS: Force close modal even on error for UI viewing
+      setTimeout(() => {
+        setShowBalancePrompt(false);
+      }, 1000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleKeepBalance = async () => {
+    setIsSaving(true);
+    try {
+      await saveStartingBalance(userData.startingBalance, getTodayIST());
+      setShowBalancePrompt(false);
+      showToast("Balance synchronized");
+    } catch (error) {
+      console.error("Failed to update balance date:", error);
+      showToast("Sync failed. Force closing...", "error");
+      // BYPASS: Force close modal even on error for UI viewing
+      setTimeout(() => {
+        setShowBalancePrompt(false);
+      }, 1000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Determine greeting based on local time
   useEffect(() => {
@@ -66,6 +124,13 @@ const Home = ({ transactions, startingBalance, onAddTransaction }) => {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
+      <BalancePrompt 
+        show={showBalancePrompt} 
+        isNewUser={isNewUser} 
+        onSave={handleSaveBalance} 
+        onKeep={handleKeepBalance} 
+        isSaving={isSaving}
+      />
       {/* 1. Welcoming Grid Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-[rgba(255,255,255,0.06)] pb-8">
         <div className="space-y-1">

@@ -2,151 +2,118 @@ import { useState, useEffect } from "react";
 import { 
   doc, 
   onSnapshot, 
-  setDoc, 
-  updateDoc, 
-  arrayUnion, 
-  getDoc 
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  getDocs,
+  writeBatch
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export const useTransactions = (userUid, showToast) => {
   const [transactions, setTransactions] = useState([]);
-  const [startingBalance, setStartingBalanceState] = useState(null);
-  const [lastBalanceUpdate, setLastBalanceUpdate] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Real-time listener for user data in Firestore
+  // Load transactions in real-time under users/{uid}/transactions
   useEffect(() => {
     if (!userUid) {
       setTransactions([]);
-      setStartingBalanceState(null);
-      setLastBalanceUpdate(null);
-      setLoading(false);
       return;
     }
 
-    const docRef = doc(db, "users", userUid);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setTransactions(data.transactions || []);
-        setStartingBalanceState(data.startingBalance || null);
-        setLastBalanceUpdate(data.lastBalanceUpdate || null);
-      } else {
-        // Initialize user document if it doesn't exist
-        setDoc(docRef, {
-          transactions: [],
-          startingBalance: null,
-          lastBalanceUpdate: null,
-          createdAt: new Date().toISOString()
-        });
-      }
-      setLoading(false);
+    const transactionsRef = collection(db, "users", userUid, "transactions");
+    const q = query(transactionsRef, orderBy("date", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const transData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTransactions(transData);
     });
 
     return () => unsubscribe();
   }, [userUid]);
 
-  // Update starting balance in Firestore
-  const updateStartingBalance = async (val) => {
-    if (!userUid) return;
-    try {
-      const parsed = parseFloat(val);
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, { 
-        startingBalance: parsed,
-        lastBalanceUpdate: new Date().toISOString()
-      });
-      setStartingBalanceState(parsed);
-      if (showToast) showToast("Terminal Balance Configured ✅", "success");
-    } catch (error) {
-      console.error("Error updating balance:", error);
-      if (showToast) showToast("Failed to update balance", "error");
-    }
-  };
-
-  // Add transaction to Firestore
+  // Add transaction
   const addTransaction = async (transactionData) => {
     if (!userUid) return;
     try {
+      const transactionsRef = collection(db, "users", userUid, "transactions");
       const newTransaction = {
         ...transactionData,
-        id: crypto.randomUUID(),
         amount: parseFloat(transactionData.amount),
-        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString()
       };
-
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, {
-        transactions: arrayUnion(newTransaction)
-      });
-
-      if (showToast) showToast("Transaction Logged to Cloud", "success");
-      return newTransaction;
+      await addDoc(transactionsRef, newTransaction);
+      if (showToast) showToast("Transaction Added", "success");
     } catch (error) {
       console.error("Error adding transaction:", error);
       if (showToast) showToast("Cloud Sync Failed", "error");
     }
   };
 
-  // Edit transaction in Firestore
+  // Edit transaction
   const editTransaction = async (id, updatedData) => {
     if (!userUid) return;
     try {
-      const updatedTransactions = transactions.map((t) =>
-        t.id === id
-          ? { ...t, ...updatedData, amount: parseFloat(updatedData.amount) }
-          : t
-      );
-
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, { transactions: updatedTransactions });
-
-      if (showToast) showToast("Cloud Record Updated", "success");
+      const transactionRef = doc(db, "users", userUid, "transactions", id);
+      await updateDoc(transactionRef, {
+        ...updatedData,
+        amount: parseFloat(updatedData.amount)
+      });
+      if (showToast) showToast("Transaction Updated", "success");
     } catch (error) {
-      console.error("Error editing transaction:", error);
+      console.error("Error updating transaction:", error);
       if (showToast) showToast("Update Failed", "error");
     }
   };
 
-  // Delete transaction from Firestore
+  // Delete transaction
   const deleteTransaction = async (id) => {
     if (!userUid) return;
     try {
-      const updatedTransactions = transactions.filter((t) => t.id !== id);
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, { transactions: updatedTransactions });
-
-      if (showToast) showToast("Record Deleted from Cloud", "error");
+      const transactionRef = doc(db, "users", userUid, "transactions", id);
+      await deleteDoc(transactionRef);
+      if (showToast) showToast("Transaction Deleted", "error");
     } catch (error) {
       console.error("Error deleting transaction:", error);
       if (showToast) showToast("Deletion Failed", "error");
     }
   };
 
-  // Bulk delete transactions in Firestore
+  // Bulk delete logic (individual deletes for Firestore integration)
   const bulkDeleteTransactions = async (ids) => {
     if (!userUid) return;
     try {
-      const updatedTransactions = transactions.filter((t) => !ids.includes(t.id));
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, { transactions: updatedTransactions });
-
-      if (showToast) showToast("Selected Records Purged", "error");
+      for (const id of ids) {
+        const transactionRef = doc(db, "users", userUid, "transactions", id);
+        await deleteDoc(transactionRef);
+      }
+      if (showToast) showToast("Selected Transactions Deleted", "error");
     } catch (error) {
       console.error("Error bulk deleting:", error);
-      if (showToast) showToast("Purge Failed", "error");
+      if (showToast) showToast("Bulk Deletion Failed", "error");
     }
   };
 
-  // Clear all data in Firestore
+  // Clear all transactions for this user
   const clearAllTransactions = async () => {
     if (!userUid) return;
     try {
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, {
-        transactions: [],
-        startingBalance: null
+      const transactionsRef = collection(db, "users", userUid, "transactions");
+      const snapshot = await getDocs(transactionsRef);
+      const batch = writeBatch(db);
+      snapshot.docs.forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+      
+      // Also reset starting balance in user doc
+      const userRef = doc(db, "users", userUid);
+      await updateDoc(userRef, {
+        startingBalance: null,
+        balanceSetDate: null
       });
 
       if (showToast) showToast("All Cloud Data Wiped", "error");
@@ -156,35 +123,12 @@ export const useTransactions = (userUid, showToast) => {
     }
   };
 
-  // Import data to Firestore
-  const importTransactions = async (jsonString) => {
-    if (!userUid) return false;
-    try {
-      const imported = JSON.parse(jsonString);
-      if (!Array.isArray(imported)) throw new Error("Invalid Format");
-
-      const docRef = doc(db, "users", userUid);
-      await updateDoc(docRef, { transactions: imported });
-
-      if (showToast) showToast("Cloud Restoration Complete", "success");
-      return true;
-    } catch (error) {
-      if (showToast) showToast("Restoration Failed", "error");
-      return false;
-    }
-  };
-
   return {
     transactions,
-    startingBalance,
-    lastBalanceUpdate,
-    loading,
-    updateStartingBalance,
     addTransaction,
     editTransaction,
     deleteTransaction,
     bulkDeleteTransactions,
-    clearAllTransactions,
-    importTransactions,
+    clearAllTransactions
   };
 };

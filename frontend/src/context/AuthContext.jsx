@@ -26,25 +26,86 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exitingLoader, setExitingLoader] = useState(false);
+  const [userData, setUserData] = useState({
+    startingBalance: null,
+    balanceSetDate: null,
+    displayName: null,
+    loading: true
+  });
 
   // Monitor auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    let fired = false;
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+      console.log("Auth State Changed. User:", currentUser?.uid);
       setUser(currentUser);
       
-      // Delay unmounting the initial loader slightly for visual perfection of the 1.5s animation
-      if (loading) {
+      if (currentUser) {
+        // Fetch custom profile data
+        try {
+          const docRef = doc(db, "users", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserData({
+              startingBalance: data.startingBalance ?? null,
+              balanceSetDate: data.balanceSetDate ?? null,
+              displayName: data.displayName ?? currentUser.displayName,
+              loading: false
+            });
+          } else {
+            console.log("No user document found in Firestore.");
+            setUserData(prev => ({ ...prev, loading: false }));
+          }
+        } catch (error) {
+          console.error("AuthContext Firestore Error:", error);
+          setUserData(prev => ({ ...prev, loading: false }));
+        }
+      } else {
+        setUserData({
+          startingBalance: null,
+          balanceSetDate: null,
+          displayName: null,
+          loading: false
+        });
+      }
+
+      // Delay unmounting the initial loader for visual perfection
+      if (!fired) {
+        fired = true;
+        console.log("Starting loader exit sequence...");
         setTimeout(() => {
           setExitingLoader(true);
           setTimeout(() => {
+            console.log("Setting loading to false.");
             setLoading(false);
-          }, 500); // Wait for fade-out animation to complete
-        }, 1200);
+          }, 500); 
+        }, 1500);
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
+
+  const saveStartingBalance = async (balance, date) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, "users", user.uid);
+      await setDoc(docRef, {
+        startingBalance: parseFloat(balance),
+        balanceSetDate: date
+      }, { merge: true });
+      
+      setUserData(prev => ({
+        ...prev,
+        startingBalance: parseFloat(balance),
+        balanceSetDate: date
+      }));
+    } catch (error) {
+      console.error("Error saving terminal balance:", error);
+      throw error;
+    }
+  };
 
   // Login with Email & Password
   const loginWithEmail = (email, password) => {
@@ -56,7 +117,6 @@ export const AuthProvider = ({ children }) => {
     const result = await signInWithPopup(auth, googleProvider);
     const loggedUser = result.user;
 
-    // Check if user already exists in Firestore. If not, initialize doc.
     const userDocRef = doc(db, "users", loggedUser.uid);
     const docSnap = await getDoc(userDocRef);
 
@@ -64,8 +124,7 @@ export const AuthProvider = ({ children }) => {
       await setDoc(userDocRef, {
         displayName: loggedUser.displayName || "Google User",
         email: loggedUser.email,
-        createdAt: new Date().toISOString(),
-        transactions: []
+        createdAt: new Date().toISOString()
       });
     }
 
@@ -77,15 +136,12 @@ export const AuthProvider = ({ children }) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const registeredUser = userCredential.user;
 
-    // Update display name in Firebase Auth
     await updateProfile(registeredUser, { displayName: name });
 
-    // Store display name and metadata in Firestore
     await setDoc(doc(db, "users", registeredUser.uid), {
       displayName: name,
       email: email,
-      createdAt: new Date().toISOString(),
-      transactions: []
+      createdAt: new Date().toISOString()
     });
 
     return userCredential;
@@ -98,11 +154,19 @@ export const AuthProvider = ({ children }) => {
 
   // Sign out
   const logout = () => {
+    setUserData({
+      startingBalance: null,
+      balanceSetDate: null,
+      displayName: null,
+      loading: false
+    });
     return signOut(auth);
   };
 
   const value = {
     user,
+    userData,
+    saveStartingBalance,
     loading,
     loginWithEmail,
     loginWithGoogle,
@@ -113,7 +177,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <LoadingScreen exiting={exitingLoader} /> : children}
+      {loading ? <LoadingScreen isExiting={exitingLoader} /> : children}
     </AuthContext.Provider>
   );
 };
