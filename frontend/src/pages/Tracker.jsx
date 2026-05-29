@@ -263,21 +263,6 @@ const Tracker = ({
             <span>ADD LINE</span>
           </button>
         </div>
-            onClick={handleExportMonthlyPDF}
-            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span>MONTHLY PDF</span>
-          </button>
-
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-accent text-brand-bg text-xs font-bold hover:bg-brand-accent/90 transition-all font-heading cursor-pointer"
-          >
-            <Plus className="h-4 w-4 stroke-[3]" />
-            <span>NEW ENTRY</span>
-          </button>
-        </div>
       </div>
 
       {/* 2. Horizontal single-row Filter Bar */}
