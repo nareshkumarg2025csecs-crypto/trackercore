@@ -1,7 +1,7 @@
 {
-  "name": "trackercore-monorepo",
+  "name": "greenledger-monorepo",
   "version": "1.0.0",
-  "description": "TrackerCore Monorepo containing frontend and backend workspaces",
+  "description": "GreenLedger Monorepo containing frontend and backend workspaces",
   "private": true,
   "scripts": {
     "start": "npm run build:frontend && cd backend && npm start",

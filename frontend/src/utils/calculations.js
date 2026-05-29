@@ -1,4 +1,4 @@
-// Financial Calculation Helpers for TrackerCore
+// Financial Calculation Helpers for GreenLedger
 
 // Helper: Get today's date string in Asia/Kolkata IST (YYYY-MM-DD)
 export const getTodayISTDateString = () => {

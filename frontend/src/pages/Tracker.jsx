@@ -238,10 +238,10 @@ const Tracker = ({
         </div>
 
         {/* Action Triggers */}
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleExportWeeklyPDF}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
             <span>WEEKLY PDF</span>
@@ -249,7 +249,7 @@ const Tracker = ({
           
           <button
             onClick={handleExportMonthlyPDF}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-brand-card border border-[rgba(255,255,255,0.08)] hover:border-brand-accent/40 text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
             <span>MONTHLY PDF</span>
@@ -257,10 +257,10 @@ const Tracker = ({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-5 py-2.5 rounded-xl bg-brand-accent text-brand-bg font-extrabold text-xs tracking-wider border border-brand-accent hover:bg-brand-accent/90 transition-all duration-200 font-heading cursor-pointer"
+            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-accent text-brand-bg text-xs font-bold hover:bg-brand-accent/90 transition-all font-heading cursor-pointer"
           >
             <Plus className="h-4 w-4 stroke-[3]" />
-            <span>ADD LINE</span>
+            <span>NEW ENTRY</span>
           </button>
         </div>
       </div>

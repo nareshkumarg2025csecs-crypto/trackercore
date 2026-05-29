@@ -78,7 +78,7 @@ const AppContent = () => {
           <div className="max-w-md w-full bg-brand-card border border-[rgba(255,255,255,0.06)] rounded-3xl p-8 space-y-6 shadow-2xl">
             <div className="space-y-2 text-center">
               <h1 className="text-xl font-bold tracking-wider font-heading uppercase text-brand-text">
-                Welcome to TrackerCore
+                Welcome to GreenLedger
               </h1>
               <p className="text-xs text-brand-text/50 font-mono">
                 Initialize your personal finance terminal ledger
@@ -208,7 +208,7 @@ const AppContent = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               
               {/* Left side stats */}
-              <div className="flex items-center space-x-3 text-left font-mono w-full sm:w-auto">
+              <div className="flex items-center space-x-3 text-left font-mono">
                 <div className="p-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-lg text-brand-text/50">
                   <Database className="h-4 w-4" />
                 </div>
@@ -223,10 +223,10 @@ const AppContent = () => {
               </div>
 
               {/* Right side command actions */}
-              <div className="w-full sm:w-auto">
+              <div>
                 <button
                   onClick={() => setIsResetConfirmOpen(true)}
-                  className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3 py-2 rounded-lg bg-brand-danger/10 border border-brand-danger/20 hover:bg-brand-danger hover:text-white text-brand-danger text-xs font-bold font-mono transition cursor-pointer"
+                  className="flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-brand-danger/10 border border-brand-danger/20 hover:bg-brand-danger hover:text-white text-brand-danger text-xs font-bold font-mono transition cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span>RESET TERMINAL</span>
@@ -236,7 +236,7 @@ const AppContent = () => {
             </div>
             
             <div className="mt-4 text-center border-t border-[rgba(255,255,255,0.03)] pt-4 text-[9px] font-mono text-brand-text/20">
-              TrackerCore Financial Command Terminal. Operating in Asia/Kolkata timezone.
+              GreenLedger Financial Command Terminal. Operating in Asia/Kolkata timezone.
             </div>
           </div>
         </footer>

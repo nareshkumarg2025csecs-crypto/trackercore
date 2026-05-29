@@ -97,7 +97,7 @@ const Login = ({ showToast }) => {
           return;
         }
         await registerWithEmail(name, email, password);
-        showToast("Welcome to TrackerCore! 🚀", "success");
+        showToast("Welcome to GreenLedger! 🚀", "success");
       } else {
         await loginWithEmail(email, password);
         showToast("Access Granted. Welcome back 🌐", "success");
@@ -153,13 +153,13 @@ const Login = ({ showToast }) => {
         }
       `}</style>
 
-      <div className="w-full max-w-lg glass-login-card rounded-[32px] p-8 sm:p-12 space-y-10 animate-modal">
+      <div className="w-full max-w-md glass-login-card rounded-[32px] p-8 sm:p-10 space-y-8 animate-modal">
         {/* Logo and Tagline */}
-        <div className="flex flex-col items-center justify-center text-center space-y-2 w-full">
-          <h2 className="w-full text-4xl sm:text-5xl font-extrabold tracking-[0.2em] text-[#00e676] neon-text-glow font-heading uppercase leading-tight">
-            TRACKER<span className="text-[#e0ffe8]">CORE</span>
+        <div className="text-center space-y-1">
+          <h2 className="text-3xl font-extrabold tracking-widest text-[#00e676] neon-text-glow font-heading uppercase">
+            GREEN<span className="text-[#e0ffe8]">LEDGER</span>
           </h2>
-          <p className="w-full text-[11px] sm:text-xs uppercase font-mono tracking-[0.3em] text-[#e0ffe8]/40">
+          <p className="text-[10px] uppercase font-mono tracking-widest text-[#e0ffe8]/40">
             Secure Personal Capital Terminal
           </p>
         </div>

@@ -83,10 +83,10 @@ const Home = ({ transactions, startingBalance, onAddTransaction }) => {
           </p>
         </div>
 
-        <div className="shrink-0 flex items-center w-full md:w-auto">
+        <div className="shrink-0 flex items-center">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-brand-accent text-brand-bg font-extrabold tracking-wider text-xs border border-brand-accent hover:bg-brand-accent/90 transition-all duration-200 font-heading cursor-pointer"
+            className="flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-brand-accent text-brand-bg font-extrabold tracking-wider text-xs border border-brand-accent hover:bg-brand-accent/90 transition-all duration-200 font-heading cursor-pointer"
           >
             <Plus className="h-4 w-4 stroke-[3]" />
             <span>RECORD TRANSACTION</span>

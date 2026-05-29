@@ -41,5 +41,5 @@ app.use((req, res) => {
 
 // Start the Express Server
 app.listen(PORT, () => {
-  console.log(`TrackerCore Monolithic Server running on port ${PORT}`);
+  console.log(`GreenLedger Monolithic Server running on port ${PORT}`);
 });

@@ -56,7 +56,7 @@ export const generatePDFReport = async (allTransactions, filteredTransactions, s
     doc.setTextColor(0, 230, 118); // #00e676
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(16);
-    doc.text("TRACKERCORE FINANCIAL TERMINAL", 14, 15);
+    doc.text("GREENLEDGER FINANCIAL TERMINAL", 14, 15);
 
     // Subtitle / Period
     doc.setTextColor(224, 255, 232); // #e0ffe8
