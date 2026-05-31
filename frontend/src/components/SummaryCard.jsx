@@ -1,6 +1,7 @@
 import React from "react";
+import CountUp from "./CountUp";
 
-const SummaryCard = ({ title, value, icon: Icon, colorClass = "text-brand-accent", subtext }) => {
+const SummaryCard = ({ title, value, numericValue, icon: Icon, colorClass = "text-brand-accent", subtext }) => {
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl p-5 md:p-7 relative overflow-hidden transition-all duration-300">
       {/* Background soft glow decoration */}
@@ -19,7 +20,22 @@ const SummaryCard = ({ title, value, icon: Icon, colorClass = "text-brand-accent
 
       <div className="space-y-1 text-left">
         <h3 className="text-xl sm:text-2xl font-bold font-mono tracking-tight text-brand-text neon-text-glow truncate">
-          {value}
+          {numericValue !== undefined ? (
+            <span>
+              ₹
+              <CountUp
+                key={numericValue}
+                from={colorClass === "text-brand-danger" ? parseFloat(numericValue) * 1.3 : 0}
+                to={parseFloat(numericValue)}
+                separator=","
+                duration={0.5}
+                direction={colorClass === "text-brand-danger" ? "down" : "up"}
+                className="text-xl sm:text-2xl font-bold font-mono tracking-tight text-brand-text neon-text-glow"
+              />
+            </span>
+          ) : (
+            value
+          )}
         </h3>
         {subtext && (
           <p className="text-[10px] sm:text-xs text-brand-text/40 font-mono truncate">{subtext}</p>

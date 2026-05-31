@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }) => {
   const [exitingLoader, setExitingLoader] = useState(false);
   const [userData, setUserData] = useState({
     startingBalance: null,
-    balanceSetDate: null,
     displayName: null,
     loading: true
   });
@@ -49,7 +48,6 @@ export const AuthProvider = ({ children }) => {
             const data = docSnap.data();
             setUserData({
               startingBalance: data.startingBalance ?? null,
-              balanceSetDate: data.balanceSetDate ?? null,
               displayName: data.displayName ?? currentUser.displayName,
               loading: false
             });
@@ -64,7 +62,6 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUserData({
           startingBalance: null,
-          balanceSetDate: null,
           displayName: null,
           loading: false
         });
@@ -87,24 +84,29 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribeAuth();
   }, []);
 
-  const saveStartingBalance = async (balance, date) => {
+  const saveStartingBalance = async (balance) => {
     if (!user) return;
     try {
       const docRef = doc(db, "users", user.uid);
       await setDoc(docRef, {
-        startingBalance: parseFloat(balance),
-        balanceSetDate: date
+        startingBalance: parseFloat(balance)
       }, { merge: true });
       
       setUserData(prev => ({
         ...prev,
-        startingBalance: parseFloat(balance),
-        balanceSetDate: date
+        startingBalance: parseFloat(balance)
       }));
     } catch (error) {
       console.error("Error saving terminal balance:", error);
       throw error;
     }
+  };
+
+  const resetStartingBalance = () => {
+    setUserData(prev => ({
+      ...prev,
+      startingBalance: null
+    }));
   };
 
   // Login with Email & Password
@@ -156,7 +158,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUserData({
       startingBalance: null,
-      balanceSetDate: null,
       displayName: null,
       loading: false
     });
@@ -167,6 +168,7 @@ export const AuthProvider = ({ children }) => {
     user,
     userData,
     saveStartingBalance,
+    resetStartingBalance,
     loading,
     loginWithEmail,
     loginWithGoogle,

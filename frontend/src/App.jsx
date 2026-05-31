@@ -22,7 +22,7 @@ const Tips = React.lazy(() => import("./pages/Tips"));
 const Login = React.lazy(() => import("./pages/Login"));
 
 const AppContent = () => {
-  const { user, userData, saveStartingBalance: updateStartingBalance } = useAuth();
+  const { user, userData, saveStartingBalance: updateStartingBalance, resetStartingBalance } = useAuth();
 
   // Toast state
   const [toast, setToast] = useState({
@@ -49,10 +49,27 @@ const AppContent = () => {
   } = useTransactions(user?.uid, showToast);
 
   const startingBalance = userData.startingBalance;
-  const lastBalanceUpdate = userData.balanceSetDate;
 
   // DB reset confirmation
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [isBalanceResetConfirmOpen, setIsBalanceResetConfirmOpen] = useState(false);
+
+  const handleResetBalance = async () => {
+    if (!user) return;
+    try {
+      const { doc, updateDoc } = await import("firebase/firestore");
+      const { db } = await import("./config/firebase");
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        startingBalance: null
+      });
+      resetStartingBalance();
+      showToast("Bank balance reset successfully", "success");
+    } catch (error) {
+      console.error("Error resetting balance:", error);
+      showToast("Balance reset failed", "error");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col selection:bg-brand-accent/30 selection:text-brand-accent">
@@ -160,7 +177,14 @@ const AppContent = () => {
               </div>
 
               {/* Right side command actions */}
-              <div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setIsBalanceResetConfirmOpen(true)}
+                  className="flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-brand-accent/10 border border-brand-accent/20 hover:bg-brand-accent hover:text-brand-bg text-brand-accent text-xs font-bold font-mono transition cursor-pointer"
+                >
+                  <Database className="h-3.5 w-3.5" />
+                  <span>RESET ACCOUNT BALANCE</span>
+                </button>
                 <button
                   onClick={() => setIsResetConfirmOpen(true)}
                   className="flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-brand-danger/10 border border-brand-danger/20 hover:bg-brand-danger hover:text-white text-brand-danger text-xs font-bold font-mono transition cursor-pointer"
@@ -172,24 +196,37 @@ const AppContent = () => {
 
             </div>
             
-            <div className="mt-4 text-center border-t border-[rgba(255,255,255,0.03)] pt-4 text-[9px] font-mono text-brand-text/20">
-              TrackerCore Financial Command Terminal. Operating in Asia/Kolkata timezone.
+            <div className="mt-4 text-center border-t border-[rgba(255,255,255,0.03)] pt-4 text-[9px] font-mono text-brand-text/20 uppercase tracking-widest">
+              TrackerCore. Operating in Asia/Kolkata. All Financial Models Encrypted.
             </div>
           </div>
         </footer>
       )}
 
-      {/* Global Reset Dialog Overlay */}
+      {/* Global Terminal Reset Dialog Overlay */}
       <ConfirmDialog
         isOpen={isResetConfirmOpen}
         title="Clear Database"
-        message="This action will permanently wipe your starting balance and all transaction history from your local browser ledger. This operation cannot be undone."
+        message="This action will permanently wipe ONLY your transaction history. Your current starting balance will NOT be affected. This operation cannot be undone."
         onConfirm={() => {
           clearAllTransactions();
           setIsResetConfirmOpen(false);
         }}
         onCancel={() => setIsResetConfirmOpen(false)}
-        confirmText="Clear Ledger"
+        confirmText="Clear Transactions"
+      />
+
+      {/* Account Balance Reset Dialog Overlay */}
+      <ConfirmDialog
+        isOpen={isBalanceResetConfirmOpen}
+        title="Reset Account Balance"
+        message="This action will clear your starting account balance. You will be prompted to set a new balance upon next refresh or transaction entry. Existing transactions will be preserved."
+        onConfirm={() => {
+          handleResetBalance();
+          setIsBalanceResetConfirmOpen(false);
+        }}
+        onCancel={() => setIsBalanceResetConfirmOpen(false)}
+        confirmText="Reset Balance"
       />
 
     </div>

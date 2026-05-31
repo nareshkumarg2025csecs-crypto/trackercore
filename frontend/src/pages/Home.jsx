@@ -4,8 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 import SummaryCard from "../components/SummaryCard";
 import TransactionModal from "../components/TransactionModal";
 import BalancePrompt from "../components/BalancePrompt";
+import CountUp from "../components/CountUp";
 import { useAuth } from "../context/AuthContext";
-import { getTodayIST } from "../utils/dateIST";
 import {
   getTodayExpensesTotal,
   getThisWeekExpensesTotal,
@@ -21,7 +21,6 @@ import {
 const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showBalancePrompt, setShowBalancePrompt] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const { user, userData, saveStartingBalance } = useAuth();
@@ -31,12 +30,7 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
   // Balance prompt logic
   useEffect(() => {
     if (!userData.loading) {
-      const today = getTodayIST();
-      if (userData.startingBalance === null) {
-        setIsNewUser(true);
-        setShowBalancePrompt(true);
-      } else if (userData.balanceSetDate !== today) {
-        setIsNewUser(false);
+      if (userData.startingBalance === null || userData.startingBalance === undefined) {
         setShowBalancePrompt(true);
       } else {
         setShowBalancePrompt(false);
@@ -47,30 +41,12 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
   const handleSaveBalance = async (newBalance) => {
     setIsSaving(true);
     try {
-      await saveStartingBalance(newBalance, getTodayIST());
+      await saveStartingBalance(newBalance);
       setShowBalancePrompt(false);
-      showToast("Balance updated successfully");
+      showToast("Balance initialized successfully");
     } catch (error) {
       console.error("Failed to save balance:", error);
       showToast("Cloud sync failed. Force closing modal for demo...", "error");
-      // BYPASS: Force close modal even on error for UI viewing
-      setTimeout(() => {
-        setShowBalancePrompt(false);
-      }, 1000);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleKeepBalance = async () => {
-    setIsSaving(true);
-    try {
-      await saveStartingBalance(userData.startingBalance, getTodayIST());
-      setShowBalancePrompt(false);
-      showToast("Balance synchronized");
-    } catch (error) {
-      console.error("Failed to update balance date:", error);
-      showToast("Sync failed. Force closing...", "error");
       // BYPASS: Force close modal even on error for UI viewing
       setTimeout(() => {
         setShowBalancePrompt(false);
@@ -124,13 +100,13 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
 
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-12 space-y-8 md:space-y-12">
-      <BalancePrompt 
-        show={showBalancePrompt} 
-        isNewUser={isNewUser} 
-        onSave={handleSaveBalance} 
-        onKeep={handleKeepBalance} 
-        isSaving={isSaving}
-      />
+      {showBalancePrompt && (
+        <BalancePrompt 
+          show={showBalancePrompt} 
+          onSave={handleSaveBalance} 
+          isSaving={isSaving}
+        />
+      )}
       {/* 1. Welcoming Grid Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-[rgba(255,255,255,0.06)] pb-8">
         <div className="space-y-1">
@@ -165,7 +141,22 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
           Available Bank Balance
         </span>
         <div className="text-3xl md:text-5xl font-bold font-mono tracking-tight text-brand-text neon-text-glow">
-          {formatCurrency(liveBalance)}
+          {startingBalance === null || startingBalance === undefined ? (
+            "—"
+          ) : (
+            <span>
+              ₹
+              <CountUp
+                key={liveBalance}
+                from={0}
+                to={parseFloat(liveBalance)}
+                separator=","
+                duration={0.5}
+                direction="up"
+                className="text-3xl md:text-5xl font-bold font-mono tracking-tight text-brand-text neon-text-glow"
+              />
+            </span>
+          )}
         </div>
       </div>
 
@@ -182,7 +173,16 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
             </div>
           </div>
           <div className="text-xl md:text-3xl font-bold font-mono text-brand-accent">
-            {formatCurrency(monthDeposited)}
+            ₹
+            <CountUp
+              key={monthDeposited}
+              from={0}
+              to={parseFloat(monthDeposited)}
+              separator=","
+              duration={0.5}
+              direction="up"
+              className="text-xl md:text-3xl font-bold font-mono text-brand-accent"
+            />
           </div>
         </div>
 
@@ -197,7 +197,16 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
             </div>
           </div>
           <div className="text-xl md:text-3xl font-bold font-mono text-brand-danger">
-            {formatCurrency(monthWithdrawn)}
+            ₹
+            <CountUp
+              key={monthWithdrawn}
+              from={parseFloat(monthWithdrawn) * 1.3}
+              to={parseFloat(monthWithdrawn)}
+              separator=","
+              duration={0.5}
+              direction="down"
+              className="text-xl md:text-3xl font-bold font-mono text-brand-danger"
+            />
           </div>
         </div>
       </div>
@@ -211,16 +220,19 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
           <SummaryCard
             title="Today Withdrawn"
             value={formatCurrency(todayWithdrawn)}
+            numericValue={todayWithdrawn}
             colorClass="text-brand-danger"
           />
           <SummaryCard
             title="This Week Withdrawn"
             value={formatCurrency(weekWithdrawn)}
+            numericValue={weekWithdrawn}
             colorClass="text-brand-danger"
           />
           <SummaryCard
             title="This Month Withdrawn"
             value={formatCurrency(monthWithdrawnTotal)}
+            numericValue={monthWithdrawnTotal}
             colorClass="text-brand-danger"
           />
         </div>

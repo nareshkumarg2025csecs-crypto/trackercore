@@ -108,13 +108,6 @@ export const useTransactions = (userUid, showToast) => {
       const batch = writeBatch(db);
       snapshot.docs.forEach((d) => batch.delete(d.ref));
       await batch.commit();
-      
-      // Also reset starting balance in user doc
-      const userRef = doc(db, "users", userUid);
-      await updateDoc(userRef, {
-        startingBalance: null,
-        balanceSetDate: null
-      });
 
       if (showToast) showToast("All Cloud Data Wiped", "error");
     } catch (error) {
