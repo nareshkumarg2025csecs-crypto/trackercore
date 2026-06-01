@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 // TrackerCore client-side Firebase Web configuration.
 // Utilizes environment variables (Vite import.meta.env) with valid-looking local development fallbacks.
@@ -37,5 +37,11 @@ googleProvider.setCustomParameters({
   prompt: 'select_account',
   login_hint: ''
 });
+
+if (import.meta.env.DEV) {
+  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+  connectFirestoreEmulator(db, 'localhost', 8080);
+  console.log('Firebase Emulator connected — using local auth and Firestore');
+}
 
 export { app, auth, db, googleProvider };
