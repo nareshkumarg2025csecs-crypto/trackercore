@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
@@ -34,6 +36,30 @@ export const AuthProvider = ({ children }) => {
 
   // Monitor auth state changes
   useEffect(() => {
+    // Check for redirect result on mount
+    const checkRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          console.log("Redirect login successful:", result.user.uid);
+          const loggedUser = result.user;
+          const userDocRef = doc(db, "users", loggedUser.uid);
+          const docSnap = await getDoc(userDocRef);
+
+          if (!docSnap.exists()) {
+            await setDoc(userDocRef, {
+              displayName: loggedUser.displayName || "Google User",
+              email: loggedUser.email,
+              createdAt: new Date().toISOString()
+            });
+          }
+        }
+      } catch (error) {
+        console.error("AuthContext Redirect Error:", error.code, error.message);
+      }
+    };
+    checkRedirect();
+
     let fired = false;
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       console.log("Auth State Changed. User:", currentUser?.uid);
@@ -116,21 +142,38 @@ export const AuthProvider = ({ children }) => {
 
   // Login with Google
   const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    const loggedUser = result.user;
+    try {
+      const isMobile = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        console.log("Mobile detected, using signInWithRedirect");
+        return await signInWithRedirect(auth, googleProvider);
+      } else {
+        console.log("Desktop detected, using signInWithPopup");
+        const result = await signInWithPopup(auth, googleProvider);
+        const loggedUser = result.user;
 
-    const userDocRef = doc(db, "users", loggedUser.uid);
-    const docSnap = await getDoc(userDocRef);
+        const userDocRef = doc(db, "users", loggedUser.uid);
+        const docSnap = await getDoc(userDocRef);
 
-    if (!docSnap.exists()) {
-      await setDoc(userDocRef, {
-        displayName: loggedUser.displayName || "Google User",
-        email: loggedUser.email,
-        createdAt: new Date().toISOString()
+        if (!docSnap.exists()) {
+          await setDoc(userDocRef, {
+            displayName: loggedUser.displayName || "Google User",
+            email: loggedUser.email,
+            createdAt: new Date().toISOString()
+          });
+        }
+
+        return result;
+      }
+    } catch (error) {
+      console.error("In-depth Google Auth Error:", {
+        code: error.code,
+        message: error.message,
+        full: error
       });
+      throw error;
     }
-
-    return result;
   };
 
   // Register with Email, Password and Full Name
