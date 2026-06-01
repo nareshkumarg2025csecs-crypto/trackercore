@@ -1,12 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Receipt, BarChart3, Lightbulb, LogOut, Menu, X } from "lucide-react";
+import { Home, Receipt, BarChart3, Lightbulb, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: Home },
@@ -16,7 +33,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-brand-accent/15 bg-brand-bg/85 backdrop-blur-md">
+    <nav className="sticky top-0 z-[1000] w-full border-b border-brand-accent/15 bg-brand-bg/85 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -82,61 +99,124 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg text-brand-text/60 hover:bg-brand-card hover:text-brand-accent transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 z-50 cursor-pointer relative w-10 h-10 flex flex-col items-center justify-center rounded-md transition-all duration-300 focus:outline-none"
+              aria-label="Toggle Menu"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <div className="relative w-6 h-5">
+                <span 
+                  className="block h-[2px] bg-[#00e676] rounded-sm absolute left-1/2 -translate-x-1/2 transition-all duration-[0.6s] ease-[cubic-bezier(0.23,1,0.32,1)]"
+                  style={{ 
+                    width: '24px',
+                    top: isMenuOpen ? '50%' : 'calc(50% - 7px)',
+                    transform: isMenuOpen ? 'translateX(-50%) translateY(-50%) rotate(45deg)' : 'translateX(-50%) rotate(0deg)'
+                  }}
+                />
+                <span 
+                  className="block h-[2px] bg-[#00e676] rounded-sm absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 transition-all duration-[0.5s] ease-out"
+                  style={{ 
+                    width: isMenuOpen ? '0px' : '24px',
+                    opacity: isMenuOpen ? 0 : 1,
+                    transform: 'translateX(-50%) rotate(0deg)'
+                  }}
+                />
+                <span 
+                  className="block h-[2px] bg-[#00e676] rounded-sm absolute left-1/2 -translate-x-1/2 transition-all duration-[0.6s] ease-[cubic-bezier(0.23,1,0.32,1)]"
+                  style={{ 
+                    width: '24px',
+                    top: isMenuOpen ? '50%' : 'calc(50% + 7px)',
+                    transform: isMenuOpen ? 'translateX(-50%) translateY(-50%) rotate(-45deg)' : 'translateX(-50%) rotate(0deg)'
+                  }}
+                />
+              </div>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Overlay */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[500px] opacity-100 border-t border-brand-accent/15" : "max-h-0 opacity-0 pointer-events-none"
+        className={`fixed z-[999] md:hidden transition-all duration-700 ease-in-out ${
+          isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
         }`}
+        style={{
+          position: 'fixed',
+          top: '64px',
+          left: 0,
+          width: '100vw',
+          height: 'calc(100vh - 64px)',
+          background: "#0a0f0d",
+          paddingTop: '32px',
+          paddingLeft: '24px',
+          paddingRight: '24px',
+          opacity: 1,
+          overflowY: 'auto'
+        }}
       >
-        <div className="px-4 py-4 space-y-2 bg-brand-bg/95 backdrop-blur-xl">
-          {navItems.map((item) => {
+        <div 
+          className="absolute top-0 left-0 width-full h-[300px] pointer-events-none z-0"
+          style={{ width: '100%', background: "radial-gradient(ellipse at 50% -20%, rgba(0,230,118,0.15) 0%, transparent 70%)" }}
+        />
+        
+        <div className="flex flex-col h-full px-0 space-y-2 relative z-10">
+          {navItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
 
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center space-x-3 rounded-lg px-4 h-[48px] text-base font-medium transition-all duration-300 ${
-                  isActive
-                    ? "bg-brand-accent/15 text-brand-accent border border-brand-accent/30"
-                    : "text-brand-text/60 hover:bg-brand-card hover:text-brand-text border border-transparent"
-                }`}
+              <div 
+                key={item.path} 
+                className={index !== navItems.length - 1 ? "pb-1" : ""}
+                style={{ borderBottom: index !== navItems.length - 1 ? "1px solid rgba(0,230,118,0.05)" : "none" }}
               >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
+                <Link
+                  to={item.path}
+                  className={`flex items-center space-x-4 rounded-xl px-5 py-4 text-lg font-semibold transition-all duration-300 ${
+                    isActive
+                      ? "text-[#00e676] bg-[#00e676]/[0.1]"
+                      : "text-brand-text/70 hover:text-[#00e676] hover:bg-[#00e676]/[0.05]"
+                  }`}
+                  style={{ 
+                    animation: isMenuOpen ? `menuLinkIn 0.4s cubic-bezier(0.23,1,0.32,1) forwards` : "none",
+                    animationDelay: `${0.1 + index * 0.08}s`,
+                    opacity: 0,
+                    width: '100%'
+                  }}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="font-heading tracking-wide uppercase">{item.label}</span>
+                </Link>
+              </div>
             );
           })}
 
           {user && (
-            <div className="pt-4 mt-4 border-t border-brand-accent/10">
-              <div className="flex items-center justify-between mb-4 px-2">
-                <div className="flex flex-col font-mono text-left">
-                  <span className="text-[10px] uppercase tracking-widest text-brand-text/30">Operator</span>
-                  <span className="text-sm font-bold text-brand-accent tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                    {user.displayName || "Operator"}
-                  </span>
+            <div className="mt-auto pb-12 pt-6 border-t border-brand-accent/10 relative z-10">
+              <div 
+                className="flex flex-col space-y-4"
+                style={{ 
+                  animation: isMenuOpen ? `menuLinkIn 0.35s cubic-bezier(0.23,1,0.32,1) forwards` : "none",
+                  animationDelay: `${0.05 + navItems.length * 0.05}s`,
+                  opacity: 0
+                }}
+              >
+                <div className="flex items-center space-x-4 px-2">
+                  <div className="h-10 w-10 rounded-full bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center">
+                    <span className="text-brand-accent font-bold">{(user.displayName || "O")[0].toUpperCase()}</span>
+                  </div>
+                  <div className="flex flex-col font-mono text-left">
+                    <span className="text-[10px] uppercase tracking-widest text-brand-text/30">Operator</span>
+                    <span className="text-sm font-bold text-brand-accent tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+                      {user.displayName || "Operator"}
+                    </span>
+                  </div>
                 </div>
                 <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    logout();
-                  }}
-                  className="flex items-center space-x-2 rounded-lg px-4 h-[48px] text-xs font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white uppercase tracking-wider"
+                  onClick={logout}
+                  className="flex items-center justify-center space-x-3 rounded-xl px-4 py-4 w-full text-xs font-bold font-mono transition-all duration-300 bg-brand-danger/10 text-brand-danger border border-brand-danger/20 hover:bg-brand-danger hover:text-white uppercase tracking-widest"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span>Disconnect</span>
+                  <LogOut className="h-5 w-5" />
+                  <span>Disconnect Session</span>
                 </button>
               </div>
             </div>

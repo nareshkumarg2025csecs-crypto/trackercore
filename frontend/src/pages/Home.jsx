@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Plus, ArrowUpRight, ArrowDownLeft, Calendar } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import SummaryCard from "../components/SummaryCard";
@@ -83,6 +83,23 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
   // Get 7-day spending data for the mini bar chart
   const barChartData = getWeeklyChartData(transactions);
 
+  // Refs for smooth CountUp transitions (prevents resetting to zero)
+  const prevBalanceRef = useRef(null);
+  const prevDepositedRef = useRef(null);
+  const prevWithdrawnRef = useRef(null);
+
+  // Update refs after render cycle
+  useEffect(() => {
+    prevBalanceRef.current = liveBalance;
+    prevDepositedRef.current = monthDeposited;
+    prevWithdrawnRef.current = monthWithdrawn;
+  }, [liveBalance, monthDeposited, monthWithdrawn]);
+
+  // Read previous values for current render
+  const fromBalance = prevBalanceRef.current !== null ? prevBalanceRef.current : liveBalance;
+  const fromDeposited = prevDepositedRef.current !== null ? prevDepositedRef.current : monthDeposited;
+  const fromWithdrawn = prevWithdrawnRef.current !== null ? prevWithdrawnRef.current : monthWithdrawn;
+
   // Custom tooltips for the chart
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -148,11 +165,11 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
               ₹
               <CountUp
                 key={liveBalance}
-                from={0}
+                from={parseFloat(fromBalance)}
                 to={parseFloat(liveBalance)}
                 separator=","
                 duration={0.5}
-                direction="up"
+                direction={parseFloat(liveBalance) < parseFloat(fromBalance) ? "down" : "up"}
                 className="text-3xl md:text-5xl font-bold font-mono tracking-tight text-brand-text neon-text-glow"
               />
             </span>
@@ -176,7 +193,7 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
             ₹
             <CountUp
               key={monthDeposited}
-              from={0}
+              from={parseFloat(fromDeposited)}
               to={parseFloat(monthDeposited)}
               separator=","
               duration={0.5}
@@ -200,7 +217,7 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
             ₹
             <CountUp
               key={monthWithdrawn}
-              from={parseFloat(monthWithdrawn) * 1.3}
+              from={parseFloat(fromWithdrawn)}
               to={parseFloat(monthWithdrawn)}
               separator=","
               duration={0.5}
