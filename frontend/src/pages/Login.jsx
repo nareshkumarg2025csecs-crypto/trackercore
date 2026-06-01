@@ -53,6 +53,7 @@ const Login = ({ showToast }) => {
 
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // Form fields
   const [name, setName] = useState("");
@@ -114,16 +115,19 @@ const Login = ({ showToast }) => {
 
   // Google Sign In
   const handleGoogleSignIn = async () => {
-    setLoading(true);
+    setIsGoogleLoading(true);
     try {
       await loginWithGoogle();
-      showToast("External Auth Success. Welcome. 🌐", "success");
-      navigate("/");
+      // On desktop local it might finish here, on production it will redirect
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        showToast("External Auth Success. Welcome. 🌐", "success");
+        navigate("/");
+      }
     } catch (error) {
       console.error("Google Auth error:", error);
       showToast(mapAuthErrorToMessage(error.code), "error");
     } finally {
-      setLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -407,11 +411,17 @@ const Login = ({ showToast }) => {
         {/* Third Party Login */}
         <button
           onClick={handleGoogleSignIn}
-          disabled={loading}
+          disabled={loading || isGoogleLoading}
           className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 py-4 rounded-2xl font-orbitron font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center hover:text-white hover:border-[#00FF88]/30 cursor-pointer disabled:opacity-50"
         >
-          <GoogleIcon />
-          Google Console
+          {isGoogleLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-[#00FF88]" />
+          ) : (
+            <>
+              <GoogleIcon />
+              Google Console
+            </>
+          )}
         </button>
 
         {/* Bottom Security Info */}

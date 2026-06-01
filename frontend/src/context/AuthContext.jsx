@@ -13,6 +13,7 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../config/firebase";
 import LoadingScreen from "../components/LoadingScreen";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -28,37 +29,46 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exitingLoader, setExitingLoader] = useState(false);
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     startingBalance: null,
     displayName: null,
     loading: true
   });
 
+  const saveUserToFirestore = async (loggedUser) => {
+    try {
+      const userDocRef = doc(db, "users", loggedUser.uid);
+      await setDoc(userDocRef, {
+        displayName: loggedUser.displayName || "",
+        email: loggedUser.email,
+        photoURL: loggedUser.photoURL || "",
+        lastLogin: new Date().toISOString(),
+        createdAt: loggedUser.metadata.creationTime || new Date().toISOString()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Silent Firestore Save Error:", error);
+    }
+  };
+
   // Monitor auth state changes
   useEffect(() => {
-    // Check for redirect result on mount
-    const checkRedirect = async () => {
+    // Check for redirect result on mount (Step 3)
+    const handleRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result && result.user) {
           console.log("Redirect login successful:", result.user.uid);
-          const loggedUser = result.user;
-          const userDocRef = doc(db, "users", loggedUser.uid);
-          const docSnap = await getDoc(userDocRef);
-
-          if (!docSnap.exists()) {
-            await setDoc(userDocRef, {
-              displayName: loggedUser.displayName || "Google User",
-              email: loggedUser.email,
-              createdAt: new Date().toISOString()
-            });
-          }
+          await saveUserToFirestore(result.user);
+          navigate("/");
         }
       } catch (error) {
-        console.error("AuthContext Redirect Error:", error.code, error.message);
+        if (error.code !== "auth/no-auth-event") {
+          console.error("AuthContext Redirect Error:", error.code, error.message);
+        }
       }
     };
-    checkRedirect();
+    handleRedirect();
 
     let fired = false;
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -140,34 +150,43 @@ export const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Login with Google
+  // Login with Google (Step 2 Implementation)
   const loginWithGoogle = async () => {
     try {
-      const isMobile = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // Clear persistence concerns/check user (Step 2 start)
+      const currentAuthUser = auth.currentUser;
       
-      if (isMobile) {
-        console.log("Mobile detected, using signInWithRedirect");
-        return await signInWithRedirect(auth, googleProvider);
+      const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Use redirect for productivity (Vercel) or mobile
+      if (isMobile || !isLocalhost) {
+        console.log("Environment requires redirect, initiating...");
+        await signInWithRedirect(auth, googleProvider);
+        return; 
       } else {
-        console.log("Desktop detected, using signInWithPopup");
-        const result = await signInWithPopup(auth, googleProvider);
-        const loggedUser = result.user;
-
-        const userDocRef = doc(db, "users", loggedUser.uid);
-        const docSnap = await getDoc(userDocRef);
-
-        if (!docSnap.exists()) {
-          await setDoc(userDocRef, {
-            displayName: loggedUser.displayName || "Google User",
-            email: loggedUser.email,
-            createdAt: new Date().toISOString()
-          });
+        // Desktop Local Development - use Popup with fallback
+        try {
+          console.log("Local desktop detected, using popup...");
+          const result = await signInWithPopup(auth, googleProvider);
+          if (result.user) {
+            await saveUserToFirestore(result.user);
+            navigate("/");
+          }
+          return result;
+        } catch (popupError) {
+          if (popupError.code === "auth/popup-blocked") {
+            console.warn("Popup blocked, falling back to redirect...");
+            await signInWithRedirect(auth, googleProvider);
+            return;
+          } else if (popupError.code === "auth/cancelled-popup-request") {
+            return; // Ignore silently
+          }
+          throw popupError;
         }
-
-        return result;
       }
     } catch (error) {
-      console.error("In-depth Google Auth Error:", {
+      console.error("Complete Google Auth Failure:", {
         code: error.code,
         message: error.message,
         full: error

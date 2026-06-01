@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // TrackerCore client-side Firebase Web configuration.
@@ -19,13 +19,23 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication
 const auth = getAuth(app);
 
+// Set persistence (survives page refreshes and popup closures)
+try {
+  setPersistence(auth, browserLocalPersistence);
+} catch (error) {
+  console.error("Firebase persistence error:", error);
+}
+
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Google Auth Provider
+// Google Auth Provider configuration
 const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('profile');
+googleProvider.addScope('email');
 googleProvider.setCustomParameters({
-  prompt: 'select_account'
+  prompt: 'select_account',
+  login_hint: ''
 });
 
 export { app, auth, db, googleProvider };
