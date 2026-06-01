@@ -60,6 +60,8 @@ export const AuthProvider = ({ children }) => {
         if (result && result.user) {
           console.log("Redirect login successful:", result.user.uid);
           await saveUserToFirestore(result.user);
+          // Force a state update to ensure current user is recognized
+          setUser(result.user);
           navigate("/");
         }
       } catch (error) {
@@ -73,9 +75,9 @@ export const AuthProvider = ({ children }) => {
     let fired = false;
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       console.log("Auth State Changed. User:", currentUser?.uid);
-      setUser(currentUser);
       
       if (currentUser) {
+        setUser(currentUser);
         // Fetch custom profile data
         try {
           const docRef = doc(db, "users", currentUser.uid);
@@ -89,13 +91,18 @@ export const AuthProvider = ({ children }) => {
             });
           } else {
             console.log("No user document found in Firestore.");
-            setUserData(prev => ({ ...prev, loading: false }));
+            setUserData(prev => ({ 
+              ...prev, 
+              displayName: currentUser.displayName,
+              loading: false 
+            }));
           }
         } catch (error) {
           console.error("AuthContext Firestore Error:", error);
           setUserData(prev => ({ ...prev, loading: false }));
         }
       } else {
+        setUser(null);
         setUserData({
           startingBalance: null,
           displayName: null,
@@ -103,22 +110,25 @@ export const AuthProvider = ({ children }) => {
         });
       }
 
-      // Delay unmounting the initial loader for visual perfection
+      // Initial load handling
       if (!fired) {
         fired = true;
-        console.log("Starting loader exit sequence...");
+        console.log("Initial auth resolved. Triggering loader transition...");
+        
+        // Speed up the initial transition if we already have a user
+        const delay = currentUser ? 800 : 1500;
+        
         setTimeout(() => {
           setExitingLoader(true);
           setTimeout(() => {
-            console.log("Setting loading to false.");
             setLoading(false);
           }, 500); 
-        }, 1500);
+        }, delay);
       }
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [navigate]);
 
   const saveStartingBalance = async (balance) => {
     if (!user) return;
