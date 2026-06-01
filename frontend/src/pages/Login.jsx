@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import MagicRings from "../components/MagicRings";
 
 const mapAuthErrorToMessage = (code) => {
   switch (code) {
@@ -142,6 +143,31 @@ const Login = ({ showToast }) => {
 
   return (
     <div className="min-h-screen bg-[#020705] flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+        <MagicRings
+          color="#00FF88"
+          colorTwo="#00e676"
+          ringCount={5}
+          speed={0.6}
+          attenuation={12}
+          lineThickness={1.5}
+          baseRadius={0.25}
+          radiusStep={0.12}
+          scaleRate={0.08}
+          opacity={0.55}
+          blur={0}
+          noiseAmount={0.05}
+          rotation={15}
+          ringGap={1.6}
+          fadeIn={0.7}
+          fadeOut={0.5}
+          followMouse={true}
+          mouseInfluence={0.08}
+          hoverScale={1.1}
+          parallax={0.03}
+          clickBurst={true}
+        />
+      </div>
       {/* Visual background decorations */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&display=swap');
