@@ -81,7 +81,7 @@ const Calculator = () => {
   }, [isOpen, expression]);
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-32px)]">
       <button
         onClick={toggleOpen}
         className="calc-trigger-btn flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-brand-card/85 border border-[rgba(255,255,255,0.08)] text-brand-text/60 hover:text-brand-accent hover:border-brand-accent/40 transition-all duration-300 shadow-lg cursor-pointer backdrop-blur-md"

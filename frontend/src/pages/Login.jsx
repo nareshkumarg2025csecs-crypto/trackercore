@@ -146,8 +146,8 @@ const Login = ({ showToast }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#020705] flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+    <div className="min-h-screen bg-[#020705] flex items-center justify-center p-4 relative overflow-hidden font-sans max-w-[100vw] w-full">
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', maxWidth: '100vw', height: '100%', zIndex: 0, overflow: 'hidden' }}>
         <MagicRings
           color="#00FF88"
           colorTwo="#00e676"

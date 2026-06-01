@@ -136,7 +136,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed z-[999] md:hidden transition-all duration-700 ease-in-out ${
+        className={`fixed z-[9999] md:hidden transition-all duration-700 ease-in-out ${
           isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
         }`}
         style={{
