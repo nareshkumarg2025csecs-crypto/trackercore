@@ -17,6 +17,35 @@ import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
+/**
+ * Deep Cleanup Utility
+ * Clears all possible forms of stored authentication data to resolve "stuck" sessions
+ * or corrupted token states.
+ */
+const performDeepCleanup = async (firebaseAuth) => {
+  console.warn("⚠️ Initiating deep security cleanup...");
+  
+  // 1. Clear Local & Session Storage (Vite/Firebase keys)
+  localStorage.clear();
+  sessionStorage.clear();
+  
+  // 2. Clear all cookies (including Firebase auth cookies)
+  const cookies = document.cookie.split(";");
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+  }
+
+  // 3. Attempt Firebase Sign Out
+  try {
+    if (firebaseAuth) await signOut(firebaseAuth);
+  } catch (e) {
+    console.error("Cleanup SignOut Error:", e);
+  }
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -64,13 +93,28 @@ export const AuthProvider = ({ children }) => {
         if (result && result.user) {
           console.log("Redirect login successful:", result.user.uid);
           await saveUserToFirestore(result.user);
-          // Force a state update to ensure current user is recognized
           setUser(result.user);
           navigate("/");
         }
       } catch (error) {
-        if (error.code !== "auth/no-auth-event") {
-          console.error("AuthContext Redirect Error:", error.code, error.message);
+        console.error("🔒 Auth Security Event:", {
+          code: error.code,
+          message: error.message,
+          email: error.customData?.email
+        });
+
+        // CRITICAL: Handle specific corruption/blocking codes
+        const fatalCodes = [
+          "auth/user-disabled",
+          "auth/user-token-expired",
+          "auth/invalid-user-token",
+          "auth/tenant-id-mismatch"
+        ];
+
+        if (fatalCodes.includes(error.code)) {
+          console.error("🚨 Account Status Critical. Running Deep Cleanup.");
+          await performDeepCleanup(auth);
+          window.location.reload(); // Force refresh to clear internal memory
         }
       }
     };
@@ -81,6 +125,16 @@ export const AuthProvider = ({ children }) => {
       console.log("Auth State Changed. User:", currentUser?.uid);
       
       if (currentUser) {
+        // Handle token refreshing
+        try {
+          const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh
+          console.log("Token Verified. Issued At:", idTokenResult.issuedAtTime);
+        } catch (tokenError) {
+          console.error("Token Integrity Failure:", tokenError);
+          await performDeepCleanup(auth);
+          return;
+        }
+
         setUser(currentUser);
         // Fetch custom profile data
         try {
@@ -159,29 +213,55 @@ export const AuthProvider = ({ children }) => {
     }));
   };
 
+  /**
+   * Enhanced Error Parser
+   * Maps Firebase codes to actionable messages and system behaviors
+   */
+  const handleAuthError = (error) => {
+    console.error("Diagnostic Auth Error:", {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
+
+    switch (error.code) {
+      case "auth/too-many-requests":
+        return "Access temporarily blocked due to unusual activity. Try again in 5 minutes.";
+      case "auth/user-disabled":
+        performDeepCleanup(auth);
+        return "This account has been disabled by security protocols.";
+      case "auth/user-not-found":
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        return "Encryption key mismatch. Please verify credentials.";
+      case "auth/network-request-failed":
+        return "Signal lost. Check your uplink/network connection.";
+      case "auth/internal-error":
+        return "Core systems failure. Attempting automatic recovery...";
+      default:
+        return error.message || "An unauthorized access event occurred.";
+    }
+  };
+
   // Login with Email & Password
-  const loginWithEmail = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const loginWithEmail = async (email, password) => {
+    try {
+      return await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      throw { ...error, message: handleAuthError(error) };
+    }
   };
 
   // Login with Google (Step 2 Implementation)
   const loginWithGoogle = async () => {
     try {
-      // Clear persistence concerns/check user (Step 2 start)
-      const currentAuthUser = auth.currentUser;
-      
       const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      // Use redirect for productivity (Vercel) or mobile
       if (isMobile || !isLocalhost) {
-        console.log("Environment requires redirect, initiating...");
         await signInWithRedirect(auth, googleProvider);
-        return; 
       } else {
-        // Desktop Local Development - use Popup with fallback
         try {
-          console.log("Local desktop detected, using popup...");
           const result = await signInWithPopup(auth, googleProvider);
           if (result.user) {
             await saveUserToFirestore(result.user);
@@ -190,54 +270,55 @@ export const AuthProvider = ({ children }) => {
           return result;
         } catch (popupError) {
           if (popupError.code === "auth/popup-blocked") {
-            console.warn("Popup blocked, falling back to redirect...");
             await signInWithRedirect(auth, googleProvider);
-            return;
-          } else if (popupError.code === "auth/cancelled-popup-request") {
-            return; // Ignore silently
+          } else {
+            throw { ...popupError, message: handleAuthError(popupError) };
           }
-          throw popupError;
         }
       }
     } catch (error) {
-      console.error("Complete Google Auth Failure:", {
-        code: error.code,
-        message: error.message,
-        full: error
-      });
-      throw error;
+      throw { ...error, message: handleAuthError(error) };
     }
   };
 
   // Register with Email, Password and Full Name
   const registerWithEmail = async (name, email, password) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const registeredUser = userCredential.user;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const registeredUser = userCredential.user;
 
-    await updateProfile(registeredUser, { displayName: name });
+      await updateProfile(registeredUser, { displayName: name });
 
-    await setDoc(doc(db, "users", registeredUser.uid), {
-      displayName: name,
-      email: email,
-      createdAt: new Date().toISOString()
-    });
+      await setDoc(doc(db, "users", registeredUser.uid), {
+        displayName: name,
+        email: email,
+        createdAt: new Date().toISOString()
+      });
 
-    return userCredential;
+      return userCredential;
+    } catch (error) {
+      throw { ...error, message: handleAuthError(error) };
+    }
   };
 
   // Reset password
-  const resetPassword = (email) => {
-    return sendPasswordResetEmail(auth, email);
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      throw { ...error, message: handleAuthError(error) };
+    }
   };
 
   // Sign out
-  const logout = () => {
+  const logout = async () => {
     setUserData({
       startingBalance: null,
       displayName: null,
       loading: false
     });
-    return signOut(auth);
+    await performDeepCleanup(auth);
+    navigate("/login");
   };
 
   const value = {
