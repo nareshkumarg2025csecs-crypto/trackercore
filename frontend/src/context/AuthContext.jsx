@@ -246,8 +246,20 @@ export const AuthProvider = ({ children }) => {
   // Login with Email & Password
   const loginWithEmail = async (email, password) => {
     try {
-      return await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      console.log("Login Success", userCredential.user);
+      return userCredential;
     } catch (error) {
+      console.log("Full Error:", error);
+      console.log("Error Code:", error.code);
+      console.log("Error Message:", error.message);
+      
+      // Re-throw with enhanced message for UI display
       throw { ...error, message: handleAuthError(error) };
     }
   };
