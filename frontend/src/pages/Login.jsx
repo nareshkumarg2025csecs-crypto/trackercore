@@ -10,9 +10,9 @@ const mapAuthErrorToMessage = (code) => {
     case "auth/invalid-credential":
       return "Incorrect email or password. Please try again.";
     case "auth/user-not-found":
-      return "No account exists with this email address.";
+      return "No account exists with this email address. Did you mean to register?";
     case "auth/email-already-in-use":
-      return "This email is already registered.";
+      return "This email is already registered. Please try logging in.";
     case "auth/invalid-email":
       return "Please enter a valid email address.";
     case "auth/weak-password":
@@ -21,6 +21,8 @@ const mapAuthErrorToMessage = (code) => {
       return "Google Sign-In was cancelled.";
     case "auth/too-many-requests":
       return "Too many failed attempts. Try again later.";
+    case "auth/operation-not-allowed":
+      return "Email/Password sign-in is not enabled in Firebase Console.";
     default:
       return code ? `Error: ${code}` : "An authentication error occurred. Please try again.";
   }
@@ -86,6 +88,12 @@ const Login = ({ showToast }) => {
     e.preventDefault();
     setLoading(true);
 
+    const normalizedEmail = email.trim().toLowerCase();
+    
+    console.log("--- Auth Debug Info ---");
+    console.log("Email Submitted:", normalizedEmail);
+    console.log("Mode:", isRegister ? "Registration" : "Login");
+
     try {
       if (isRegister) {
         if (password !== confirmPassword) {
@@ -98,15 +106,19 @@ const Login = ({ showToast }) => {
           setLoading(false);
           return;
         }
-        await registerWithEmail(name, email, password);
+        await registerWithEmail(name, normalizedEmail, password);
         showToast("Profile Initialized. Welcome, Operator. 🚀", "success");
       } else {
-        await loginWithEmail(email, password);
+        await loginWithEmail(normalizedEmail, password);
         showToast("Access Granted. System Ready. 🌐", "success");
       }
       navigate("/");
     } catch (error) {
-      console.error("Auth error:", error);
+      console.error("Auth error details:", {
+        code: error.code,
+        message: error.message,
+        email: normalizedEmail
+      });
       showToast(mapAuthErrorToMessage(error.code), "error");
     } finally {
       setLoading(false);

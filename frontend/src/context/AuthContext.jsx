@@ -47,7 +47,11 @@ export const AuthProvider = ({ children }) => {
         createdAt: loggedUser.metadata.creationTime || new Date().toISOString()
       }, { merge: true });
     } catch (error) {
-      console.error("Silent Firestore Save Error:", error);
+      console.error("Firestore Save Error:", {
+        code: error.code,
+        message: error.message,
+        projectId: auth.app.options.projectId
+      });
     }
   };
 
