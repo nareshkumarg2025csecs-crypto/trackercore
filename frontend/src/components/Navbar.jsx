@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Receipt, BarChart3, Lightbulb, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import PillNav from "./PillNav";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,29 +52,21 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="flex space-x-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center space-x-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ${
-                      isActive
-                        ? "bg-brand-accent/15 text-brand-accent border border-brand-accent/30 neon-border-glow"
-                        : "text-brand-text/60 hover:bg-brand-card hover:text-brand-text border border-transparent"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+          {/* Desktop Navigation - Refactored with PillNav */}
+          <div className="hidden md:flex items-center space-x-6">
+            <PillNav
+              items={[
+                { label: 'Dashboard', href: '/' },
+                { label: 'Tracker', href: '/tracker' },
+                { label: 'Graphs', href: '/graphs' },
+                { label: 'Insights', href: '/tips' },
+              ]}
+              baseColor="#00FF87"
+              pillColor="#09110E"
+              pillTextColor="#00FF87"
+              hoveredPillTextColor="#09110E"
+              initialLoadAnimation={true}
+            />
 
             {/* Operator Chip / Logout */}
             {user && (
