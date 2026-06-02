@@ -137,7 +137,7 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
             {greeting}, {userName}
           </h1>
           <p className="text-[10px] md:text-xs text-brand-text/50 font-mono text-left">
-            Command terminal dashboard and capital reserves logs
+            Command terminal dashboard manage your expenses here 
           </p>
         </div>
 

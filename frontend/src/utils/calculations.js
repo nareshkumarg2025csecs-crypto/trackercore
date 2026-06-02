@@ -109,27 +109,28 @@ export const getLiveBankBalance = (transactions, startingBalance) => {
 
 // 6. Chronological Running Balances
 export const computeRunningBalances = (transactions, startingBalance) => {
-  const transactionsWithIndices = transactions.map((t, idx) => ({ ...t, originalIndex: idx }));
-
-  const sorted = [...transactionsWithIndices].sort((a, b) => {
-    const dateA = a.date.split("-").map(Number);
-    const dateB = b.date.split("-").map(Number);
-    const valA = new Date(dateA[0], dateA[1] - 1, dateA[2]).getTime();
-    const valB = new Date(dateB[0], dateB[1] - 1, dateB[2]).getTime();
-    if (valA !== valB) return valA - valB;
-    return a.originalIndex - b.originalIndex;
+  // 1. Sort transactions by timestamp ASCENDING (oldest first) to compute balance
+  // Use createdAt (timestamp) if available, otherwise fallback to date string
+  const sorted = [...transactions].sort((a, b) => {
+    const timeA = a.createdAt || new Date(a.date).getTime();
+    const timeB = b.createdAt || new Date(b.date).getTime();
+    return timeA - timeB;
   });
 
-  let currentBalance = startingBalance;
+  let runningBalance = startingBalance || 0;
   const balances = {};
-  sorted.forEach((t) => {
-    if (t.type === "saving") {
-      currentBalance += t.amount;
+
+  // 2. Calculate balance as a running total
+  sorted.forEach((txn) => {
+    if (txn.type === "saving") {
+      runningBalance += txn.amount;
     } else {
-      currentBalance -= t.amount;
+      runningBalance -= txn.amount;
     }
-    balances[t.id] = currentBalance;
+    // Store the computed balance for each transaction ID
+    balances[txn.id] = runningBalance;
   });
+
   return balances;
 };
 

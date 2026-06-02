@@ -24,14 +24,16 @@ export const useTransactions = (userUid, showToast) => {
     }
 
     const transactionsRef = collection(db, "users", userUid, "transactions");
-    const q = query(transactionsRef, orderBy("date", "desc"));
+    const q = query(transactionsRef, orderBy("createdAt", "desc"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const transData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      setTransactions(transData);
+      
+      const sortedData = transData.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      setTransactions(sortedData);
     });
 
     return () => unsubscribe();
@@ -42,10 +44,22 @@ export const useTransactions = (userUid, showToast) => {
     if (!userUid) return;
     try {
       const transactionsRef = collection(db, "users", userUid, "transactions");
+      const istTimestamp = new Intl.DateTimeFormat('en-IN', { 
+        timeZone: 'Asia/Kolkata', 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+      }).format(new Date());
+
       const newTransaction = {
         ...transactionData,
         amount: parseFloat(transactionData.amount),
-        createdAt: new Date().toISOString()
+        createdAt: Date.now(),
+        createdAtIST: istTimestamp
       };
       await addDoc(transactionsRef, newTransaction);
       if (showToast) showToast("Transaction Added", "success");

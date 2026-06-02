@@ -38,7 +38,9 @@ googleProvider.setCustomParameters({
   login_hint: ''
 });
 
-if (import.meta.env.DEV) {
+const isEmulator = import.meta.env.VITE_USE_EMULATOR === 'true';
+
+if (isEmulator && import.meta.env.DEV) {
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, 'localhost', 8080);
   console.log('Firebase Emulator connected — using local auth and Firestore');

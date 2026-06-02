@@ -411,9 +411,11 @@ const Tracker = ({
                   </td>
                 </tr>
               ) : (
+                /* Note: filteredTransactions is already sorted newest-first due to useTransactions hook */
                 filteredTransactions.map((t, idx) => {
                   const isSaving = t.type === "saving";
                   const isSelected = selectedIds.includes(t.id);
+                  // runningBalances look-up table has been pre-computed oldest-first
                   const balanceVal = runningBalances[t.id] !== undefined ? runningBalances[t.id] : startingBalance;
 
                   return (
@@ -434,8 +436,15 @@ const Tracker = ({
                       </td>
 
                       {/* Date */}
-                      <td className="py-4 md:py-5 px-4 md:px-6 whitespace-nowrap text-brand-text/40 font-semibold">
-                        {formatDate(t.date)}
+                      <td className="py-4 md:py-5 px-4 md:px-6 whitespace-nowrap text-brand-text/40 font-semibold text-left">
+                        {t.createdAtIST ? (
+                          <div className="flex flex-col">
+                            <span className="text-brand-text/60">{t.createdAtIST.split(',')[0]}</span>
+                            <span className="text-[10px] text-brand-text/30">{t.createdAtIST.split(',')[1]}</span>
+                          </div>
+                        ) : (
+                          formatDate(t.date)
+                        )}
                       </td>
 
                       {/* Description particulars */}
