@@ -1,18 +1,16 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "./LoadingScreen";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { currentUser, loading } = useAuth();
 
-  // If initial auth is still resolving, we do not redirect.
-  // The context handles rendering the full-screen loading screen.
   if (loading) {
-    return null;
+    return <LoadingScreen isExiting={false} />;
   }
 
-  // Redirect to login if user is not authenticated
-  if (!user) {
+  if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
 

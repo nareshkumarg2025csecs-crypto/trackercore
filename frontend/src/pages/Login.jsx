@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -51,7 +51,13 @@ const GoogleIcon = () => (
 
 const Login = ({ showToast }) => {
   const navigate = useNavigate();
-  const { loginWithEmail, loginWithGoogle, registerWithEmail, resetPassword } = useAuth();
+  const { loginWithEmail, loginWithGoogle, registerWithEmail, resetPassword, currentUser } = useAuth();
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/", { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -112,7 +118,6 @@ const Login = ({ showToast }) => {
         await loginWithEmail(normalizedEmail, password);
         showToast("Access Granted. System Ready. 🌐", "success");
       }
-      navigate("/");
     } catch (error) {
       console.error("Auth error details:", {
         code: error.code,
@@ -133,7 +138,6 @@ const Login = ({ showToast }) => {
       // On desktop local it might finish here, on production it will redirect
       if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
         showToast("External Auth Success. Welcome. 🌐", "success");
-        navigate("/");
       }
     } catch (error) {
       console.error("Google Auth error:", error);

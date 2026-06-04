@@ -6,6 +6,7 @@ import TransactionModal from "../components/TransactionModal";
 import BalancePrompt from "../components/BalancePrompt";
 import CountUp from "../components/CountUp";
 import { useAuth } from "../context/AuthContext";
+import { useProfile } from "../hooks/useProfile";
 import {
   getTodayExpensesTotal,
   getThisWeekExpensesTotal,
@@ -24,7 +25,8 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
   const [isSaving, setIsSaving] = useState(false);
 
   const { user, userData, saveStartingBalance } = useAuth();
-  const userName = user?.displayName || "Operator";
+  const { profile } = useProfile(user?.uid, showToast);
+  const userName = profile?.username || user?.displayName || "Operator";
   const [greeting, setGreeting] = useState("");
 
   // Balance prompt logic
@@ -133,8 +135,13 @@ const Home = ({ transactions, startingBalance, onAddTransaction, showToast }) =>
               {formatDate(getTodayISTDateString())}
             </span>
           </div>
-          <h1 className="text-xl md:text-3xl font-extrabold tracking-tight text-brand-text font-heading text-left">
-            {greeting}, {userName}
+          <h1 className="text-xl md:text-3xl font-extrabold tracking-tight text-brand-text font-heading text-left flex items-center gap-3">
+            <span>{greeting}, {userName}</span>
+            {profile?.role && (
+              <span className="px-2.5 py-1 rounded-md bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-[9px] md:text-[10px] font-mono tracking-widest uppercase align-middle mt-1">
+                {profile.role}
+              </span>
+            )}
           </h1>
           <p className="text-[10px] md:text-xs text-brand-text/50 font-mono text-left">
             Command terminal dashboard manage your expenses here 

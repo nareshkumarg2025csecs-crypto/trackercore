@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Receipt, BarChart3, Lightbulb, LogOut } from "lucide-react";
+import { Home, Receipt, BarChart3, Lightbulb, LogOut, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useProfile } from "../hooks/useProfile";
 import PillNav from "./PillNav";
 
 const Navbar = () => {
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { profile } = useProfile(user?.uid);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -31,6 +33,7 @@ const Navbar = () => {
     { path: "/tracker", label: "Tracker", icon: Receipt },
     { path: "/graphs", label: "Graphs", icon: BarChart3 },
     { path: "/tips", label: "Insights", icon: Lightbulb },
+    { path: "/profile", label: "Profile", icon: User },
   ];
 
   return (
@@ -60,6 +63,7 @@ const Navbar = () => {
                 { label: 'Tracker', href: '/tracker' },
                 { label: 'Graphs', href: '/graphs' },
                 { label: 'Insights', href: '/tips' },
+                { label: 'Profile', href: '/profile' },
               ]}
               baseColor="#00FF87"
               pillColor="#09110E"
@@ -74,7 +78,7 @@ const Navbar = () => {
                 <div className="hidden lg:flex flex-col text-right font-mono">
                   <span className="text-[8px] uppercase tracking-widest text-brand-text/30">Operator</span>
                   <span className="text-[10px] font-bold text-brand-accent tracking-wide max-w-[100px] truncate">
-                    {user.displayName || "Operator"}
+                    {profile?.username || user?.displayName || "Operator"}
                   </span>
                 </div>
                 <button
@@ -195,12 +199,12 @@ const Navbar = () => {
               >
                 <div className="flex items-center space-x-4 px-2">
                   <div className="h-10 w-10 rounded-full bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center">
-                    <span className="text-brand-accent font-bold">{(user.displayName || "O")[0].toUpperCase()}</span>
+                    <span className="text-brand-accent font-bold">{(profile?.username || user?.displayName || "O")[0].toUpperCase()}</span>
                   </div>
                   <div className="flex flex-col font-mono text-left">
                     <span className="text-[10px] uppercase tracking-widest text-brand-text/30">Operator</span>
                     <span className="text-sm font-bold text-brand-accent tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
-                      {user.displayName || "Operator"}
+                      {profile?.username || user?.displayName || "Operator"}
                     </span>
                   </div>
                 </div>

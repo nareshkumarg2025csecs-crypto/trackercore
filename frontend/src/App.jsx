@@ -20,6 +20,7 @@ const Tracker = React.lazy(() => import("./pages/Tracker"));
 const Graphs = React.lazy(() => import("./pages/Graphs"));
 const Tips = React.lazy(() => import("./pages/Tips"));
 const Login = React.lazy(() => import("./pages/Login"));
+const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
 
 const AppContent = () => {
   const { user, userData, saveStartingBalance: updateStartingBalance, resetStartingBalance } = useAuth();
@@ -145,6 +146,14 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <Tips transactions={transactions} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage showToast={showToast} />
                 </ProtectedRoute>
               }
             />

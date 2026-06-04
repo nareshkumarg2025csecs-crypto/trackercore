@@ -57,7 +57,6 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [exitingLoader, setExitingLoader] = useState(false);
   const navigate = useNavigate();
   const [userData, setUserData] = useState({
     startingBalance: null,
@@ -94,7 +93,6 @@ export const AuthProvider = ({ children }) => {
           console.log("Redirect login successful:", result.user.uid);
           await saveUserToFirestore(result.user);
           setUser(result.user);
-          navigate("/");
         }
       } catch (error) {
         console.error("🔒 Auth Security Event:", {
@@ -168,21 +166,7 @@ export const AuthProvider = ({ children }) => {
         });
       }
 
-      // Initial load handling
-      if (!fired) {
-        fired = true;
-        console.log("Initial auth resolved. Triggering loader transition...");
-        
-        // Speed up the initial transition if we already have a user
-        const delay = currentUser ? 800 : 1500;
-        
-        setTimeout(() => {
-          setExitingLoader(true);
-          setTimeout(() => {
-            setLoading(false);
-          }, 500); 
-        }, delay);
-      }
+      setLoading(false);
     });
 
     return () => unsubscribeAuth();
@@ -279,7 +263,6 @@ export const AuthProvider = ({ children }) => {
           const result = await signInWithPopup(auth, googleProvider);
           if (result.user) {
             await saveUserToFirestore(result.user);
-            navigate("/");
           }
           return result;
         } catch (popupError) {
@@ -337,6 +320,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    currentUser: user,
     userData,
     saveStartingBalance,
     resetStartingBalance,
@@ -350,7 +334,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <LoadingScreen isExiting={exitingLoader} /> : children}
+      {children}
     </AuthContext.Provider>
   );
 };
